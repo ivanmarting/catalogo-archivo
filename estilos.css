@@ -1,0 +1,277 @@
+/* -------------------------------------------
+   1. VARIABLES, RESET Y BASE
+   ------------------------------------------- */
+:root {
+    /* Paleta basada en la imagen: blanco, gris, rojo oscuro */
+    --color-fondo-pagina: #f8f8f8;    /* Fondo general muy claro */
+    --color-principal: #333;          /* Texto principal */
+    --color-acento: #a00;             /* Rojo/Vino tinto para bordes de tarjetas */
+    --color-gris-claro: #ddd;         /* Separadores y bordes suaves */
+    --color-fondo-filtro: #fff;       /* Fondo de la barra de filtros */
+    --color-sombra: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--color-fondo-pagina);
+    color: var(--color-principal);
+    margin: 0;
+    padding: 0;
+}
+
+/* Enlaces base para el menú superior */
+header a {
+    color: var(--color-acento);
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px;
+}
+
+/* -------------------------------------------
+   2. ESTRUCTURA PRINCIPAL (LAYOUT DE DOS COLUMNAS)
+   ------------------------------------------- */
+.contenedor-principal {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto 40px auto;
+    gap: 30px;
+}
+
+
+.sidebar-filtros {
+    width: 280px;
+    padding: 20px;
+    background-color: var(--color-fondo-filtro);
+    border: 1px solid var(--color-gris-claro);
+    box-shadow: 0 2px 4px var(--color-sombra);
+    border-radius: 4px;
+    height: fit-content; 
+}
+
+.sidebar-filtros h2 {
+    color: var(--color-principal);
+    margin-top: 0;
+    border-bottom: 2px solid var(--color-gris-claro);
+    padding-bottom: 10px;
+}
+
+.sidebar-filtros h3 {
+    color: var(--color-acento);
+    font-size: 1.1em;
+    margin-top: 15px;
+    border-bottom: 1px solid var(--color-gris-claro);
+    padding-bottom: 5px;
+}
+
+.sidebar-filtros label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+/* CONTENIDO PRINCIPAL (TARJETAS) */
+.catalogo-contenido {
+    flex-grow: 1;
+}
+
+/* -------------------------------------------
+   3. BARRA DE BÚSQUEDA Y TÍTULO
+   ------------------------------------------- */
+.barra-busqueda {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid var(--color-gris-claro);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.catalogo-contenido h1 {
+    color: var(--color-principal);
+    border-bottom: 2px solid var(--color-gris-claro);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+/* -------------------------------------------
+   4. LAYOUT DE LAS TARJETAS (GRID)
+   ------------------------------------------- */
+.catalogo-listado {
+    display: grid;
+   
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 25px;
+    padding-top: 10px;
+}
+
+.obra-card {
+    background-color: #fff;
+    /* BORDE ROJO SIEMPRE PRESENTE */
+    border: 1px solid var(--color-acento); 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--color-sombra);
+    padding: 10px;
+    text-align: center;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out; 
+}
+
+
+.obra-card:hover {
+    transform: scale(1.03); 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); 
+}
+
+
+.obra-card.seleccionada {
+    border-color: var(--color-acento);
+}
+
+/* -------------------------------------------
+   5. ESTILOS DENTRO DE LA TARJETA
+   ------------------------------------------- */
+.miniatura-catalogo {
+
+    width: 100%; 
+    height: 250px;
+    object-fit: cover; 
+    
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.obra-titulo {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--color-principal);
+    margin: 5px 0;
+}
+
+/* Estilo para el compositor en Rojo (Punto 1) */
+.obra-autor {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+.autor-rojo {
+    color: var(--color-acento) !important; /* Fuerza el color rojo */
+    font-weight: bold;
+}
+
+.obra-estado {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Botones y Enlaces */
+.obra-card a {
+    display: block; /* Hacemos que ocupe todo el ancho para un solo botón */
+    padding: 8px 10px;
+    margin: 10px 0 0 0;
+    border: 1px solid var(--color-acento);
+    color: var(--color-acento);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.obra-card a:hover {
+    background-color: var(--color-acento);
+    color: white;
+}
+
+
+
+/* -------------------------------------------
+   5. ESTILOS DEL FORMULARIO DE CARGA
+   ------------------------------------------- */
+
+/* Contenedor principal del formulario */
+form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: var(--color-fondo-filtro); /* Fondo blanco */
+    border: 1px solid var(--color-gris-claro);
+    box-shadow: 0 4px 10px var(--color-sombra);
+    border-radius: 8px;
+}
+
+form h1 {
+    color: var(--color-principal);
+    border-bottom: 2px solid var(--color-gris-claro);
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+form h2 {
+    color: var(--color-acento); /* Títulos de sección en rojo */
+    font-size: 1.2em;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+/* Separadores horizontales */
+form hr {
+    border: 0;
+    border-top: 1px solid var(--color-gris-claro);
+    margin: 20px 0;
+}
+
+/* Etiquetas y Campos de entrada */
+form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="file"],
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--color-gris-claro);
+    border-radius: 4px;
+    box-sizing: border-box; 
+    font-size: 1em;
+}
+
+form select {
+    /* Ajuste para la selección de estado físico */
+    appearance: none; 
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Estilo del botón principal de envío */
+form button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 30px;
+    background-color: var(--color-acento); 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+form button[type="submit"]:hover {
+    background-color: #800; 
+}
+
+
+form p a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: var(--color-acento);
+    text-decoration: none;
+}

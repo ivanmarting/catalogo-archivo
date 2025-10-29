@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <title>Cargar Nueva Obra Sinfónica</title>
     <link rel="stylesheet" href="estilos.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body>  
+
+    <header>
+        <a href="" class="logo"></a>
+        <nav>
+        <a href="biblioteca.php">Inicio</a>
+        <a href="nosotros.php">Nosotros</a>
+        <a href="biblioteca.php" class="logo">
+            <img src="src/images.png" alt="Logo">
+        </a>
+        <a href="contacto.php">Contacto</a>
+        <a href="cargar_obra.php">Subir Archivo</a>
+        </nav>
+    </header>
 
     <form action="procesar_carga.php" method="POST" enctype="multipart/form-data">
 

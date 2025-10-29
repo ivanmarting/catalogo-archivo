@@ -3,30 +3,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subir Partitura - Archivo</title>
-  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="estilos.css"> 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<script src="/js/script.js"></script> 
 <body>
 
-  <!-- NAVBAR -->
-  <header>
-    <a href="" class="logo"></a>
-    <nav>
-      <a href="/index.html">Inicio</a>
-      <a href="/pages/aboutus.html">Nosotros</a>
-      <a href="/index.html" class="logo">
-        <img src="/images/images.png" alt="">
-      </a>
-      <a href="/pages/contactUs.html">Contacto</a>
-      <a href="/pages/loadingPage.html">Subir Archivo</a>
-    </nav>
-  </header>
+    <header>
+        <a href="" class="logo"></a>
+        <nav>
+        <a href="biblioteca.php">Inicio</a>
+        <a href="nosotros.php">Nosotros</a>
+        <a href="biblioteca.php" class="logo">
+            <img src="src/images.png" alt="Logo">
+        </a>
+        <a href="contacto.php">Contacto</a>
+        <a href="cargar_obra.php">Subir Archivo</a>
+        </nav>
+    </header>
 
   <!-- BANNER -->
-
+    
   <!-- SECCIÓN NOSOTROS -->
   <section class="nosotros-section">
     <div class="nosotros-header">
@@ -58,7 +56,7 @@
     <section class="nosotros-section">
       <div class="destacado-barreto">
           <div class="barreto-imagen">
-              <img src="/images/Maria Clara Barreto.jpg" alt="María Clara Barreto">
+              <img src="src/Maria Clara Barreto.jpg" alt="María Clara Barreto">
           </div>
           <div class="barreto-info">
               <h3>María Clara Barreto</h3>
@@ -70,10 +68,8 @@
       
       <hr class="separator-barreto">
   
-      <div class="nosotros-cards-container">
-          </div>
-  </section>
-</section>
+      <div class="nosotros-cards-container"></div>
+    </section>
 
   <!-- SECCIÓN UBICACIÓN -->
   <section class="location-section">
@@ -96,8 +92,7 @@
             </div>
         
     </div>
-</section>
-
+  </section>
   <!-- FOOTER -->
   <footer>
     <div class="footer-container">   
@@ -132,6 +127,4 @@
   </footer>
 
 </body>
-
-
 </html>

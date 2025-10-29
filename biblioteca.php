@@ -35,27 +35,69 @@ $resultado = $conexion->query($sql);
     <meta charset="UTF-8">
     <title>Catálogo General de Partituras</title>
     <link rel="stylesheet" href="estilos.css"> 
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header>
+        <a href="" class="logo"></a>
         <nav>
-            <a href="biblioteca.php">Catálogo</a> | 
-            <a href="cargar_obra.php">Cargar Obra</a>
+        <a href="biblioteca.php">Inicio</a>
+        <a href="nosotros.php">Nosotros</a>
+        <a href="biblioteca.php" class="logo">
+            <img src="src/images.png" alt="Logo">
+        </a>
+        <a href="contacto.php">Contacto</a>
+        <a href="cargar_obra.php">Subir Archivo</a>
         </nav>
     </header>
 
+    <section class="banner">
+    <div class="banner-content">
+        
+      <div class="banner-text">
+          <h1>Archivo Musical de La Orquesta Sinfónica del Chaco</h1>
+          <h2>"Elena Córdoba, Armando Di Doménica"</h2>
+          <p>Preservando el patrimonio musical de la región.</p>
+      </div>
+
+    </div>
+    </section>
+
     <div class="contenedor-principal">
         
-        <aside class="sidebar-filtros">
-            <h2>Filtros</h2>
-            <div class="filtro-grupo">
-                <h3>Género</h3>
-                <label><input type="radio"> Clásico</label><br>
-                <label><input type="radio"> Tango</label>
-                </div>
-            <h3>Ordenar</h3>
-            <label><input type="radio" checked> Más reciente</label>
+        <aside>
+        <h2>Filtros</h2>
+        
+        <h3>Género</h3>
+        <ul>
+            <li><input type="radio" name="filtro"> Clásico</li>
+            <li><input type="radio" name="filtro"> Tango</li>
+            <li><input type="radio" name="filtro"> Folclore</li>
+            <li><input type="radio" name="filtro"> Contemporaneo</li>
+        </ul>
+    
+        <h3>Instrumentación</h3>
+        <ul>
+            <li><input type="checkbox"> Violín</li>
+            <li><input type="checkbox"> Piano</li>
+            <li><input type="checkbox"> Banda Completa</li>
+            <li><input type="checkbox"> Cuerdas</li>
+            <li><input type="checkbox"> Coro</li>
+        </ul>
+
+        <h3>Ordenar</h3>
+        <ul>
+            <li><input type="radio" name="orden"> Relevancia</li>
+            <li><input type="radio" name="orden"> Más antiguo</li>
+            <li><input type="radio" name="orden"> Más reciente</li>
+            <li><input type="radio" name="orden"> Alfabeticamente / Ascendente </li>
+            <li><input type="radio" name="orden"> Alfabeticamente / Descendente </li>
+        </ul>
+
         </aside>
 
         <main class="catalogo-contenido">
@@ -91,11 +133,44 @@ $resultado = $conexion->query($sql);
             $conexion->close();
             ?>
             
-            </div> </main>
+            </div> 
+        </main>
         
-    </div> <footer>
-        <p>© 2025 Catálogo de Partituras. Desarrollado con PHP y MySQL.</p>
-    </footer>
+    </div> 
+    
+    <!-- FOOTER -->
+  <footer>
+    <div class="footer-container">   
+          <div class="footer-col footer-nav">
+              <h4>Navegación Rápida</h4>
+              <ul>
+                  <li><a href="/index.html">Inicio</a></li>
+                  <li><a href="/pages/aboutus.html">Nosotros</a></li>
+                  <li><a href="/pages/contactUs.html">Contacto</a></li>
+                  <li><a href="/pages/loadingPage.html">Cargar Archivo</a></li>
+              </ul>
+          </div>
+          
+          <div class="footer-col footer-info">
+              <h4>Información de Contacto</h4>
+              <p>Archivo Orquesta Sinfónica del Chaco</p>
+              <p>Email: <a href="mailto:archivo@orquestadelchaco.org">archivo@orquestadelchaco.org</a></p>
+              <p><a href="#">Política de Acceso</a></p>
+          </div>
+          
+          <div class="footer-col footer-social">
+              <h4>Síguenos</h4>
+              <div class="socials">
+                  <a href="#">📘</a>
+                  <a href="#">💬</a>
+                  <a href="#">▶️</a>
+              </div>
+              <p class="copyright">© 2025. Todos los derechos reservados.</p>
+          </div>
+  
+    </div>
+  </footer>
+
 
 </body>
 </html>

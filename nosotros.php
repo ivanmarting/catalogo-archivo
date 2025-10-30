@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subir Partitura - Archivo</title>
+  <title>Nosotros</title>
   <link rel="stylesheet" href="estilos.css"> 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,9 +22,6 @@
         </nav>
     </header>
 
-  <!-- BANNER -->
-    
-  <!-- SECCIÓN NOSOTROS -->
   <section class="nosotros-section">
     <div class="nosotros-header">
         <h2>Nuestra Misión y Visión</h2>
@@ -68,31 +64,11 @@
       
       <hr class="separator-barreto">
   
-      <div class="nosotros-cards-container"></div>
-    </section>
-
-  <!-- SECCIÓN UBICACIÓN -->
-  <section class="location-section">
-    <div class="location-content">
-        
-        <div class="location-info">
-            <h2>Ubicación del Archivo Físico</h2>
-            <p>El Archivo Musical, que alberga el patrimonio físico de la Orquesta Sinfónica, se encuentra en la Casa de las Culturas de Resistencia, Chaco.</p>
-            
-            <div class="address-details">
-                <p><strong>Institución:</strong> Casa de las Culturas</p>
-                <p><strong>Dirección:</strong> Marcelo T. de Alvear 90, Resistencia, Chaco</p>
-                <p><strong>Horarios del Archivo:</strong> Lunes a Viernes (Consulta previa requerida)</p>
-                <a href="mailto:archivo@orquestadelchaco.org" class="contact-link">📧 Solicitar Acceso al Archivo</a>
-            </div>
-        </div>
-
-        <div class="map-placeholder">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3540.62977241823!2d-58.9886853236703!3d-27.449646615853716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94450cf454b9d53f%3A0xdfab227279457afe!2sCasa%20de%20las%20Culturas!5e0!3m2!1ses!2sar!4v1759627642284!5m2!1ses!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-        
-    </div>
+      <div class="nosotros-cards-container">
+          </div>
   </section>
+</section>
+
   <!-- FOOTER -->
   <footer>
     <div class="footer-container">   

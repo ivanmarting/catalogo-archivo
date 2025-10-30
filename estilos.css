@@ -37,7 +37,7 @@ header a {
 .contenedor-principal {
     display: flex;
     max-width: 1200px;
-    margin: 40px auto 40px auto;
+    margin: 40px auto;
     gap: 30px;
 }
 
@@ -76,6 +76,29 @@ header a {
 /* CONTENIDO PRINCIPAL (TARJETAS) */
 .catalogo-contenido {
     flex-grow: 1;
+    text-align: center;
+}
+.mensaje-catalogo-vacio {
+    /* Mantenemos el ancho máximo y el margin: auto; */
+    max-width: 500px; 
+    margin: 40px auto; 
+    
+    /* Hacemos que el div actúe como un contenedor flex para centrar su contenido, si lo tuviera. */
+    display: flex; 
+    justify-content: center; /* Centra horizontalmente el contenido interno (el <p>) */
+    
+    /* El texto del <p> debe estar alineado a la izquierda si tiene varias líneas,
+       o centrado si quieres que las líneas cortas también se centren. */
+    text-align: center; 
+
+    padding: 20px; 
+}
+
+/* Además, para asegurar que el texto se centre dentro del <p>: */
+.mensaje-catalogo-vacio p {
+    text-align: center;
+    /* Asegúrate de que el <p> no tenga un ancho máximo que impida el centrado. */
+    width: 100%; 
 }
 
 /* -------------------------------------------
@@ -194,14 +217,14 @@ header a {
 
 /* Contenedor principal del formulario */
 form {
-    max-width: 600px;
+    max-width: 680px;
     margin: 40px auto;
     padding: 30px;
     background-color: var(--color-fondo-filtro);
     /* Fondo blanco */
     border: 1px solid var(--color-gris-claro);
     box-shadow: 0 4px 10px var(--color-sombra);
-    border-radius: 8px;
+    border-radius: 15px;
 }
 
 form h1 {

@@ -25,7 +25,7 @@
 
     <form action="procesar_carga.php" method="POST" enctype="multipart/form-data">
 
-        <h1>Subir Partitura y Metadatos</h1>
+        <h1>Subir Obra</h1>
         
         <h2>Información del Autor</h2>
         <label for="autor_nombre">Nombre del Autor:</label>
@@ -46,9 +46,6 @@
         
         <label for="obra_inventario">N° de Inventario:</label>
         <input type="text" name="obra_inventario" id="obra_inventario" required>
-        
-        <label for="obra_opus">N° de Opus:</label>
-        <input type="text" name="obra_opus" id="obra_opus">
         
         <label for="obra_orquestacion">Tipo de Orquestación:</label>
         <input type="text" name="obra_orquestacion" id="obra_orquestacion">

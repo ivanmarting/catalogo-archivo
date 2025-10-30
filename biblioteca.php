@@ -35,7 +35,6 @@ $resultado = $conexion->query($sql);
     <meta charset="UTF-8">
     <title>Catálogo General de Partituras</title>
     <link rel="stylesheet" href="estilos.css"> 
-    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -127,7 +126,10 @@ $resultado = $conexion->query($sql);
 
                 }
             } else {
-                echo "<p>No hay obras cargadas en el catálogo.</p>";
+                echo '<div></div>'; //no se porque este div hace que el texto de abajo este centrado. NO BORRAR O SE ROMPE LA BIBLITOECA
+                echo '<div class="mensaje-catalogo-vacio">';
+                echo "<p>¡Vaya! Parece que nuestro catálogo está de vacaciones. 🏖️ No encontramos ninguna obra cargada. ¿Quizás es hora de añadir la primera?</p>";
+                echo '</div>';
             }
             
             $conexion->close();

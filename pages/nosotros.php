@@ -13,19 +13,12 @@
 <body>
 
     <header>
-        <a href="../index.php" class="logo"></a>
         <nav>
-        
-        <a href="../index.php">Inicio</a>
-        
-        <a href="nosotros.php">Nosotros</a>
-        
-        <a href="../index.php" class="logo">
-            <img src="../src/images.png" alt="Logo">
-        </a>
-        
-        <a href="contacto.php">Contacto</a>
-        <a href="cargar_obra.php">Subir Archivo</a>
+            <a href="../index.php">Inicio</a>
+            <a href="nosotros.php">Nosotros</a>
+            <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
+            <a href="contacto.php">Contacto</a>
+            <a href="cargar_obra.php">Subir Archivo</a> 
         </nav>
     </header>
 

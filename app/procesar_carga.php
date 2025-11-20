@@ -248,21 +248,29 @@ if ($exito && $id_obra > 0 && !empty($instrumentos_seleccionados)) {
 
 
 // ===================================================================
-// 9. FINALIZAR TRANSACCIÓN Y MENSAJE
+// 9. FINALIZAR TRANSACCIÓN Y MENSAJE (MODIFICADO)
 // ===================================================================
+
+// Preparamos el mensaje de retorno antes de cerrar la conexión.
+$mensaje_retorno = '';
+$pagina_destino = '../Pages/cargar_obra.php'; 
 
 if ($exito) {
     $conexion->commit();
-    echo "<h1>✅ Carga Completa!</h1>";
-    echo "<p>La obra <strong>" . htmlspecialchars($titulo) . "</strong> ha sido guardada.</p>";
+    
+    // Crear el mensaje de éxito para la alerta de JavaScript
+    $mensaje_retorno = "✅ ¡Carga Completa! La obra '" . htmlspecialchars($titulo) . "' ha sido guardada con éxito.";
     if (!empty($mensaje_adicional)) {
-        echo "<p>Detalles:</p>";
-        // Muestra las advertencias o errores menores
-        echo "<div style='background-color:#fff7e6; border-left: 4px solid #ffc107; padding: 10px; margin-bottom: 15px;'>$mensaje_adicional</div>";
+        // Añadir advertencias (como miniatura no subida o PDF faltante) al mensaje
+        $mensaje_retorno .= "\n\n(Detalles/Advertencias: Revise el formulario para más información si corresponde.)";
+        
+        // ADVERTENCIA: Aquí se podría mejorar el manejo de $mensaje_adicional para que se muestre en cargar_obra.php,
+        // pero por simplicidad de usar solo un 'alert', solo indicamos que hay detalles.
     }
     
-    // RUTA DE REDIRECCIÓN DE ÉXITO
-    echo '<p><a href="../index.php">Ver Catálogo</a></p>'; 
+    // Si queremos redirigir a la misma página del formulario pero indicando el éxito:
+    $pagina_destino .= '?status=success'; 
+    
 } else {
     // Si algo falló, se revierten todos los cambios en la BD
     $conexion->rollback(); 
@@ -272,15 +280,39 @@ if ($exito) {
         unlink($directorio_miniaturas . basename($ruta_miniatura));
     }
     
-    echo "<h1>❌ Error en la Carga!</h1>";
-    echo "<p>La obra no fue registrada. Revise lo siguiente:</p>";
-    echo "<div style='color: #dc3545; border: 1px solid #dc3545; background-color: #f8d7da; padding: 10px; margin-bottom: 15px;'>";
-    echo $mensaje_adicional ?: "Ocurrió un error inesperado. La transacción fue abortada.";
-    echo "</div>";
+    // Crear el mensaje de error para la alerta de JavaScript
+    $mensaje_error = $mensaje_adicional ?: "Ocurrió un error inesperado. La transacción fue abortada.";
+    $mensaje_retorno = "❌ ¡Error en la Carga! La obra no fue registrada. Revise los detalles: " . strip_tags(str_replace("<br>", " | ", $mensaje_error));
 
-    // RUTA DE REDIRECCIÓN DE ERROR
-    echo "<p><a href='../Pages/cargar_obra.php'>Volver al formulario</a></p>";
+    // Si hubo error, redirigimos a la misma página del formulario pero indicando el error:
+    $pagina_destino .= '?status=error';
 }
 
 $conexion->close();
+
+
+// 10. REDIRECCIÓN CON MENSAJE (USANDO SESSION para el mensaje)
+// -------------------------------------------------------------
+// Nota: Para usar $_SESSION, debe iniciar la sesión.
+// Esto es el método MÁS limpio para pasar mensajes de una página a otra.
+session_start();
+$_SESSION['mensaje_alerta'] = $mensaje_retorno;
+
+
+// Redireccionar al formulario con el indicador de éxito/error
+header("Location: " . $pagina_destino);
+exit;
+
+// El código original ha sido removido y reemplazado por la redirección:
+/*
+if ($exito) {
+    // ... código de éxito original ...
+    echo '<p><a href="../index.php">Ver Catálogo</a></p>'; 
+} else {
+    // ... código de error original ...
+    echo "<p><a href='../Pages/cargar_obra.php'>Volver al formulario</a></p>";
+}
+$conexion->close();
+*/
+
 ?>

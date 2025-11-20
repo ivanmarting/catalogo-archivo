@@ -1,4 +1,7 @@
 <?php
+// INICIAR SESIÓN (NECESARIO PARA PASAR MENSAJES ENTRE PÁGINAS)
+session_start();
+
 // ===================================================================
 // 1. CONEXIÓN PARA OBTENER DATOS DE FILTROS (GENERAR DROPDOWNS)
 // ===================================================================
@@ -32,6 +35,28 @@ $conexion->close();
     <link rel="stylesheet" href="../css/estilos.css"> 
 </head>
 <body>
+    
+    <header> 
+        <nav>
+            <a href="../index.php">Inicio</a>
+            <a href="nosotros.php">Nosotros</a>
+            <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
+            <a href="contacto.php">Contacto</a>
+            <a href="cargar_obra.php">Subir Archivo</a> 
+        </nav>
+    </header>
+    
+    <?php
+    if (isset($_SESSION['mensaje_alerta'])) {
+        $mensaje = json_encode($_SESSION['mensaje_alerta']);
+        echo "<script>
+            alert($mensaje);
+        </script>";
+        // Limpiar la variable de sesión para que la alerta no se muestre al recargar
+        unset($_SESSION['mensaje_alerta']);
+    }
+    ?>
+
     <form action="../app/procesar_carga.php" method="POST" enctype="multipart/form-data">
 
         <h1>Subir Partitura y Metadatos</h1>

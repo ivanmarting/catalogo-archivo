@@ -183,6 +183,26 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             if (busquedaTexto) {
                 document.querySelector('.barra-busqueda').value = busquedaTexto;
             }
+            
+            // ⚠️ Nuevo script: Detectar el botón de Limpiar Filtros
+            const botonLimpiar = document.getElementById('btn-limpiar');
+            if (botonLimpiar) {
+                botonLimpiar.addEventListener('click', function(e) {
+                    e.preventDefault(); 
+                    
+                    // Simplemente redirigir a index.php (vacío de filtros) para reseteo completo
+                    window.location.href = 'index.php'; 
+                    
+                    /* ALTERNATIVA: Si quieres resetear solo el formulario sin recargar:
+                    const formFiltros = document.querySelector('.sidebar-filtros form');
+                    if (formFiltros) {
+                        formFiltros.reset();
+                        // Opcional: Cerrar los toggles
+                        document.querySelectorAll('.toggle-checkbox').forEach(cb => cb.checked = false);
+                    }
+                    */
+                });
+            }
         });
 
         // Script para que el input de Búsqueda rápida envíe el formulario principal
@@ -210,6 +230,28 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             });
         });
     </script>
+    <style>
+        /* Estilos básicos para el nuevo botón de limpiar (Asumiendo que 'estilos.css' tiene 'var(--color-acento)') */
+        .btn-limpiar {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px; /* Separación del botón de Aplicar Filtros */
+            background-color: #f8f9fa; /* Color más claro o secundario */
+            color: #6c757d; /* Color de texto secundario */
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9em;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .btn-limpiar:hover {
+            background-color: #e2e6ea;
+            color: #495057;
+        }
+    </style>
 </head>
 <body>
 
@@ -242,6 +284,9 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             
             <form action="index.php" method="GET">
             
+                <button type="submit" class="btn-filtrar" style="background-color: var(--color-acento);">Aplicar Filtros</button>
+                
+                <button type="button" id="btn-limpiar" class="btn-limpiar">Limpiar Filtros</button>
                 <div class="filtro-grupo">
                     <input type="checkbox" id="toggle-genero" class="toggle-checkbox">
                     <label for="toggle-genero" class="toggle-label">
@@ -312,8 +357,6 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                     </div>
                 </div>
             
-                <button type="submit" class="btn-filtrar" style="background-color: var(--color-acento);">Aplicar Filtros</button>
-
             </form>
 
         </aside>

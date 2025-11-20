@@ -33,6 +33,33 @@ $conexion->close();
     <meta charset="UTF-8">
     <title>Cargar Nueva Obra Musical</title>
     <link rel="stylesheet" href="../css/estilos.css"> 
+    <style>
+        /* Estilos para los nuevos botones de selección */
+        .select-category-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+        }
+        .select-category-buttons button {
+            padding: 10px 15px;
+            border: 2px solid #ccc;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s, border-color 0.2s;
+            font-weight: bold;
+        }
+        .select-category-buttons button.active {
+            border-color: var(--color-acento, red); /* Usar el color de acento si está definido */
+            background-color: #ffe0e0;
+        }
+        /* Ocultar inicialmente el campo OPUS */
+        #campo_opus {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     
@@ -61,6 +88,12 @@ $conexion->close();
 
         <h1>Subir Partitura y Metadatos</h1>
         
+        <div class="select-category-buttons" role="group" aria-label="Selección de Categoría">
+            <button type="button" data-category="universal" id="btn-universal">Partituras Universales</button>
+            <button type="button" data-category="popular" id="btn-popular">Partituras Populares</button>
+        </div>
+        
+        <input type="hidden" name="categoria_obra" id="categoria_obra" required>
         <h2>Información del Autor</h2>
         <label for="autor_nombre">Nombre del Autor:</label>
         <input type="text" name="autor_nombre" id="autor_nombre" required>
@@ -78,6 +111,10 @@ $conexion->close();
         <label for="obra_titulo">Título de la Obra:</label>
         <input type="text" name="obra_titulo" id="obra_titulo" required>
         
+        <div id="campo_opus">
+            <label for="opus">OPUS:</label>
+            <input type="text" name="opus" id="opus" placeholder="Ej: Op. 55 / BWV 1007">
+        </div>
         <label for="obra_inventario">N° de Inventario:</label>
         <input type="text" name="obra_inventario" id="obra_inventario" required>
 
@@ -143,5 +180,49 @@ $conexion->close();
         
         <p><a href="../index.php">Ir a la Biblioteca/Catálogo</a></p>
     </form>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnUniversal = document.getElementById('btn-universal');
+            const btnPopular = document.getElementById('btn-popular');
+            const campoOpus = document.getElementById('campo_opus');
+            const inputOpus = document.getElementById('opus');
+            const inputCategoria = document.getElementById('categoria_obra');
+            const form = document.querySelector('form');
+
+            function setActiveButton(category) {
+                btnUniversal.classList.remove('active');
+                btnPopular.classList.remove('active');
+                
+                if (category === 'universal') {
+                    btnUniversal.classList.add('active');
+                    campoOpus.style.display = 'block'; // Mostrar OPUS
+                    inputOpus.required = true;         // OPUS requerido para Universal
+                    inputCategoria.value = 'universal';
+                } else if (category === 'popular') {
+                    btnPopular.classList.add('active');
+                    campoOpus.style.display = 'none';  // Ocultar OPUS
+                    inputOpus.required = false;        // OPUS no requerido para Popular
+                    inputOpus.value = '';              // Limpiar valor si se oculta
+                    inputCategoria.value = 'popular';
+                }
+            }
+
+            btnUniversal.addEventListener('click', () => setActiveButton('universal'));
+            btnPopular.addEventListener('click', () => setActiveButton('popular'));
+
+            // Inicializar el formulario en modo Popular por defecto (o el que prefieras)
+            // Esto asegura que el campo oculto 'categoria_obra' siempre tenga un valor.
+            setActiveButton('popular'); 
+            
+            // Opcional: Impedir el envío si la categoría no está seleccionada (aunque el hidden input ya está requerido)
+            form.addEventListener('submit', function(e) {
+                if (!inputCategoria.value) {
+                    alert('Por favor, selecciona si es Partitura Universal o Popular.');
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 // ===================================================================
 // Zona horaria para PHP (Recomendada)
 date_default_timezone_set('America/Argentina/Buenos_Aires'); 
+session_start(); // Aseguramos que la sesión esté iniciada para el mensaje
 
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
@@ -34,22 +35,30 @@ $mensaje_adicional = '';
 
 
 // ===================================================================
-// 2. OBTENER Y LIMPIAR DATOS DEL FORMULARIO
+// 2. OBTENER Y LIMPIAR DATOS DEL FORMULARIO (MODIFICADO)
 // ===================================================================
 
 $autor_nombre = $_POST['autor_nombre'] ?? '';
 $autor_apellido = $_POST['autor_apellido'] ?? '';
 $autor_orden = (int)($_POST['autor_orden'] ?? 0);
 $titulo = $_POST['obra_titulo'] ?? ''; 
+$opus = $_POST['opus'] ?? NULL; // ⬅️ NUEVO CAMPO OPUS
 $obra_inventario = $_POST['obra_inventario'] ?? '';
 $anio_composicion = $_POST['anio_composicion'] ?: NULL; 
 $editorial_nombre = $_POST['editorial_nombre'] ?? '';
 $id_genero = (int)($_POST['id_genero'] ?? 0);
 $instrumentos_seleccionados = $_POST['instrumentos'] ?? []; 
+$categoria_obra = $_POST['categoria_obra'] ?? ''; // ⬅️ NUEVO CAMPO CATEGORÍA
 
+
+// Si es popular, nos aseguramos que OPUS sea NULL para la BD
+if ($categoria_obra === 'popular' || empty($opus)) {
+    $opus = NULL;
+}
 
 // ===================================================================
 // 3. PROCESAR Y GUARDAR AUTOR (TABLA AUTORES)
+// [SIN CAMBIOS NECESARIOS]
 // ===================================================================
 $id_autor = 0;
 // Buscar autor existente por nombre y apellido
@@ -79,6 +88,7 @@ $stmt_busca->close();
 
 // ===================================================================
 // 4. PROCESAR Y GUARDAR EDITORIAL (TABLA EDITORIALES)
+// [SIN CAMBIOS NECESARIOS]
 // ===================================================================
 $id_editorial = NULL; 
 if ($exito && !empty($editorial_nombre)) {
@@ -110,6 +120,7 @@ if ($exito && !empty($editorial_nombre)) {
 
 // ===================================================================
 // 5. PROCESAR Y MOVER MINIATURA (Usa imagen por defecto si falta)
+// [SIN CAMBIOS NECESARIOS]
 // ===================================================================
 $ruta_miniatura = 'uploads/default.png'; // ⬅️ RUTA POR DEFECTO
 if ($exito && isset($_FILES['miniatura_img']) && $_FILES['miniatura_img']['error'] === UPLOAD_ERR_OK) {
@@ -134,7 +145,7 @@ if ($exito && isset($_FILES['miniatura_img']) && $_FILES['miniatura_img']['error
 
 
 // ===================================================================
-// 6. INSERTAR DATOS DE LA OBRA PRINCIPAL (TABLA OBRAS)
+// 6. INSERTAR DATOS DE LA OBRA PRINCIPAL (TABLA OBRAS) (MODIFICADO)
 // ===================================================================
 
 $id_obra = 0;
@@ -145,21 +156,22 @@ if ($exito && $id_autor > 0 && $id_genero > 0) {
         $mensaje_adicional .= "<br>- Error: El título de la obra está vacío y es obligatorio.";
     } else {
         
-        // 1. Sanitizamos el título para evitar inyección SQL (ya que no usaremos bind_param para este campo)
+        // 1. Sanitizamos el título para evitar inyección SQL
         $titulo_escapado = $conexion->real_escape_string($titulo); 
+        $opus_escapado = $opus !== NULL ? "'" . $conexion->real_escape_string($opus) . "'" : 'NULL'; // Manejo de NULL para OPUS
 
-        // 2. La sentencia SQL: Notar que 'titulo' ya NO es un '?' sino el valor escapado
-        $sql_obra = "INSERT INTO obras (id_autor, id_editorial, id_genero, titulo, anio_composicion, nro_inventario, ruta_miniatura) 
-                     VALUES (?, ?, ?, '$titulo_escapado', ?, ?, ?)"; 
+        // 2. La sentencia SQL: AÑADIMOS EL CAMPO OPUS
+        $sql_obra = "INSERT INTO obras (id_autor, id_editorial, id_genero, titulo, opus, anio_composicion, nro_inventario, ruta_miniatura) 
+                     VALUES (?, ?, ?, '$titulo_escapado', $opus_escapado, ?, ?, ?)"; 
                      
         $stmt_obra = $conexion->prepare($sql_obra);
         
-        // 3. bind_param ahora solo usa 6 parámetros (i i i s s s), excluyendo el título.
+        // 3. bind_param: ahora solo usa 6 parámetros (i i i s s s), excluyendo título y opus.
         $stmt_obra->bind_param("iiisss", 
             $id_autor, 
             $id_editorial, 
             $id_genero, 
-            $anio_composicion, 
+            $anio_composicion, // El orden se mantiene para el resto de los parámetros
             $obra_inventario, 
             $ruta_miniatura
         );
@@ -168,7 +180,7 @@ if ($exito && $id_autor > 0 && $id_genero > 0) {
             $id_obra = $conexion->insert_id; 
         } else {
             $exito = FALSE;
-            $mensaje_adicional .= "<br>- Error al insertar la obra principal: " . $stmt_obra->error;
+            $mensaje_adicional .= "<br>- Error al insertar la obra principal (Revise que la columna 'opus' exista en la BD): " . $stmt_obra->error;
         }
         $stmt_obra->close();
     }
@@ -177,6 +189,7 @@ if ($exito && $id_autor > 0 && $id_genero > 0) {
 
 // ===================================================================
 // 7. PROCESAR Y GUARDAR MÚLTIPLES ARCHIVOS PDF
+// [SIN CAMBIOS NECESARIOS]
 // ===================================================================
 
 $archivos_adjuntados = 0;
@@ -225,6 +238,7 @@ if ($exito && $archivos_adjuntados === 0) {
 
 // ===================================================================
 // 8. INSERTAR RELACIÓN DE INSTRUMENTACIÓN (TABLA OBRAS_INSTRUMENTOS)
+// [SIN CAMBIOS NECESARIOS]
 // ===================================================================
 
 if ($exito && $id_obra > 0 && !empty($instrumentos_seleccionados)) {
@@ -248,7 +262,8 @@ if ($exito && $id_obra > 0 && !empty($instrumentos_seleccionados)) {
 
 
 // ===================================================================
-// 9. FINALIZAR TRANSACCIÓN Y MENSAJE (MODIFICADO)
+// 9. FINALIZAR TRANSACCIÓN Y MENSAJE
+// [SIN CAMBIOS NECESARIOS]
 // ===================================================================
 
 // Preparamos el mensaje de retorno antes de cerrar la conexión.
@@ -261,14 +276,9 @@ if ($exito) {
     // Crear el mensaje de éxito para la alerta de JavaScript
     $mensaje_retorno = "✅ ¡Carga Completa! La obra '" . htmlspecialchars($titulo) . "' ha sido guardada con éxito.";
     if (!empty($mensaje_adicional)) {
-        // Añadir advertencias (como miniatura no subida o PDF faltante) al mensaje
         $mensaje_retorno .= "\n\n(Detalles/Advertencias: Revise el formulario para más información si corresponde.)";
-        
-        // ADVERTENCIA: Aquí se podría mejorar el manejo de $mensaje_adicional para que se muestre en cargar_obra.php,
-        // pero por simplicidad de usar solo un 'alert', solo indicamos que hay detalles.
     }
     
-    // Si queremos redirigir a la misma página del formulario pero indicando el éxito:
     $pagina_destino .= '?status=success'; 
     
 } else {
@@ -284,35 +294,18 @@ if ($exito) {
     $mensaje_error = $mensaje_adicional ?: "Ocurrió un error inesperado. La transacción fue abortada.";
     $mensaje_retorno = "❌ ¡Error en la Carga! La obra no fue registrada. Revise los detalles: " . strip_tags(str_replace("<br>", " | ", $mensaje_error));
 
-    // Si hubo error, redirigimos a la misma página del formulario pero indicando el error:
     $pagina_destino .= '?status=error';
 }
 
 $conexion->close();
 
 
-// 10. REDIRECCIÓN CON MENSAJE (USANDO SESSION para el mensaje)
+// 10. REDIRECCIÓN CON MENSAJE
 // -------------------------------------------------------------
-// Nota: Para usar $_SESSION, debe iniciar la sesión.
-// Esto es el método MÁS limpio para pasar mensajes de una página a otra.
-session_start();
 $_SESSION['mensaje_alerta'] = $mensaje_retorno;
 
 
 // Redireccionar al formulario con el indicador de éxito/error
 header("Location: " . $pagina_destino);
 exit;
-
-// El código original ha sido removido y reemplazado por la redirección:
-/*
-if ($exito) {
-    // ... código de éxito original ...
-    echo '<p><a href="../index.php">Ver Catálogo</a></p>'; 
-} else {
-    // ... código de error original ...
-    echo "<p><a href='../Pages/cargar_obra.php'>Volver al formulario</a></p>";
-}
-$conexion->close();
-*/
-
 ?>

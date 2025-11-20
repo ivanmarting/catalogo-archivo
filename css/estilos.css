@@ -91,8 +91,7 @@ nav a:hover {
    2. ESTRUCTURA PRINCIPAL (LAYOUT DE DOS COLUMNAS)
    ------------------------------------------- */
 .contenedor-principal {
-    display: grid; /* CAMBIO CLAVE: Usamos Grid */
-    grid-template-columns: 280px 1fr; /* CAMBIO CLAVE: Definimos las columnas */
+    display: flex;
     max-width: 1200px;
     margin: 40px auto;
     gap: 30px;
@@ -108,11 +107,13 @@ nav a:hover {
     box-shadow: 0 2px 4px var(--color-sombra);
     border-radius: 5px;
     
-    /* PROPIEDADES STICKY */
+    /* MODIFICACIONES CLAVE PARA STICKY */
     height: fit-content; 
-    position: sticky; 
-    top: 20px;       
+    position: sticky; /* Hacemos que el elemento se pegue */
+    top: 20px;       /* Distancia desde la parte superior de la ventana donde se "pegará" */
 }
+/* FIN DE MODIFICACIONES CLAVE PARA STICKY */
+
 
 .sidebar-filtros h2 {
     /* MODIFICADO: Título principal en color acento (rojo) */

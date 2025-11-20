@@ -14,14 +14,26 @@ if ($conexion->connect_error) {
 }
 
 // ===================================================================
-// 2. PROCESAMIENTO DE FILTROS Y ORDENACIÓN (GET)
+// 2. PROCESAMIENTO DE FILTROS Y ORDENACIÓN (GET) (MODIFICADO)
 // ===================================================================
 
 $clausula_where = [];
 $parametros = ''; 
 $valores = [];    
 
-// --- 2.1. FILTROS CLÁSICOS (WHERE con múltiples OR) ---
+// --- 2.1. FILTRO POR CATEGORÍA UNIVERSAL/POPULAR (NUEVO) ---
+$categoria_filtro = $_GET['categoria'] ?? 'todo'; // 'universal', 'popular', o 'todo' (default)
+
+if ($categoria_filtro === 'universal') {
+    // Filtro Universal: OPUS NO es NULL
+    $clausula_where[] = "O.opus IS NOT NULL AND O.opus != ''";
+} elseif ($categoria_filtro === 'popular') {
+    // Filtro Popular: OPUS es NULL o cadena vacía
+    $clausula_where[] = "O.opus IS NULL OR O.opus = ''";
+}
+
+
+// --- 2.2. FILTROS CLÁSICOS (WHERE con múltiples OR) ---
 
 // a) Género
 if (!empty($_GET['filtro_genero']) && is_array($_GET['filtro_genero'])) {
@@ -34,12 +46,7 @@ if (!empty($_GET['filtro_genero']) && is_array($_GET['filtro_genero'])) {
     }
 }
 
-/*
-// Se ha ELIMINADO la sección de filtro clásico por Editorial (filtro_editorial[])
-// porque solo se requiere la ordenación alfabética.
-*/
-
-// --- 2.2. FILTRO ESPECIAL: INSTRUMENTACIÓN ---
+// --- 2.3. FILTRO ESPECIAL: INSTRUMENTACIÓN ---
 
 if (!empty($_GET['filtro_instrumento']) && is_array($_GET['filtro_instrumento'])) {
     $categorias_instr = $_GET['filtro_instrumento'];
@@ -47,7 +54,6 @@ if (!empty($_GET['filtro_instrumento']) && is_array($_GET['filtro_instrumento'])
     foreach ($categorias_instr as $categoria) {
         $cat_escapada = $conexion->real_escape_string($categoria); 
         
-        // Se mantiene la lógica AND (la obra debe tener instrumentos de TODAS las categorías seleccionadas)
         $clausula_where[] = "O.id_obra IN (
             SELECT OI.id_obra 
             FROM obras_instrumentos OI
@@ -59,7 +65,7 @@ if (!empty($_GET['filtro_instrumento']) && is_array($_GET['filtro_instrumento'])
     }
 }
 
-// --- 2.3. PROCESAMIENTO DE ORDENACIÓN (ÚNICO RADIO GROUP) ---
+// --- 2.4. PROCESAMIENTO DE ORDENACIÓN (ÚNICO RADIO GROUP) ---
 $ordenacion_seleccionada = $_GET['ordenar_por'] ?? 'autor_asc'; // Default: Autor ASC
 
 $mapa_ordenacion = [
@@ -76,7 +82,7 @@ $campo_orden = $orden['campo'];
 $direccion_orden = $orden['direccion'];
 
 
-// --- 2.4. Búsqueda por Texto ---
+// --- 2.5. Búsqueda por Texto ---
 $busqueda_texto = $_GET['busqueda_texto'] ?? '';
 if (!empty($busqueda_texto)) {
     $texto_busqueda = '%' . $busqueda_texto . '%'; 
@@ -86,10 +92,10 @@ if (!empty($busqueda_texto)) {
 }
 
 
-// --- 2.5. CONSTRUCCIÓN FINAL DE LA CONSULTA SQL ---
+// --- 2.6. CONSTRUCCIÓN FINAL DE LA CONSULTA SQL ---
 
 $sql = "SELECT 
-    O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura,
+    O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura, O.opus,
     A.nombre AS autor_nombre, A.apellido AS autor_apellido,
     E.nombre AS editorial_nombre, G.nombre AS genero_nombre,
     COUNT(AP.id_obra) AS cantidad_pdfs 
@@ -105,14 +111,14 @@ if (!empty($clausula_where)) {
 }
 
 // Se necesita GROUP BY antes de aplicar ORDER BY
-$sql .= " GROUP BY O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura, A.nombre, A.apellido, E.nombre, G.nombre";
+$sql .= " GROUP BY O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura, O.opus, A.nombre, A.apellido, E.nombre, G.nombre";
 
 // Aplicar la ordenación
 $sql .= " ORDER BY " . $campo_orden . " " . $direccion_orden . ", O.titulo ASC"; 
 
 
 // ----------------------------------------------------
-// 2.6. EJECUCIÓN DE LA CONSULTA PRINCIPAL
+// 2.7. EJECUCIÓN DE LA CONSULTA PRINCIPAL
 // ----------------------------------------------------
 $stmt = $conexion->prepare($sql);
 
@@ -129,7 +135,7 @@ if ($stmt) {
 
 
 // ----------------------------------------------------
-// 2.7. CONSULTAS para la barra de FILTROS (sidebar)
+// 2.8. CONSULTAS para la barra de FILTROS (sidebar)
 // ----------------------------------------------------
 $generos_q = $conexion->query("SELECT id_genero, nombre FROM generos ORDER BY nombre");
 $categorias_q = $conexion->query("SELECT DISTINCT categoria FROM instrumentos ORDER BY categoria");
@@ -149,6 +155,8 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         // Script para rellenar automáticamente los filtros después de la recarga
         document.addEventListener('DOMContentLoaded', function() {
             const params = new URLSearchParams(window.location.search);
+            
+            // ... (rest of filtering logic remains unchanged) ...
             
             // Rellenar checkboxes (filtros clásicos)
             params.forEach((value, key) => {
@@ -190,18 +198,18 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                 botonLimpiar.addEventListener('click', function(e) {
                     e.preventDefault(); 
                     
-                    // Simplemente redirigir a index.php (vacío de filtros) para reseteo completo
+                    // Al limpiar, redirigir al index sin filtros ni categoría
                     window.location.href = 'index.php'; 
-                    
-                    /* ALTERNATIVA: Si quieres resetear solo el formulario sin recargar:
-                    const formFiltros = document.querySelector('.sidebar-filtros form');
-                    if (formFiltros) {
-                        formFiltros.reset();
-                        // Opcional: Cerrar los toggles
-                        document.querySelectorAll('.toggle-checkbox').forEach(cb => cb.checked = false);
-                    }
-                    */
                 });
+            }
+            
+            // ⚠️ Nuevo script: Marcar botón de categoría activo
+            const categoriaActiva = params.get('categoria');
+            if (categoriaActiva) {
+                const btnActivo = document.querySelector(`.category-button[data-category="${categoriaActiva}"]`);
+                if (btnActivo) {
+                    btnActivo.classList.add('active');
+                }
             }
         });
 
@@ -251,6 +259,38 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             background-color: #e2e6ea;
             color: #495057;
         }
+        
+        /* Estilos para los botones de categoría */
+        .category-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px; /* Separación del banner/título */
+            margin-bottom: 20px;
+        }
+        .category-button {
+            padding: 10px 20px;
+            border: 2px solid #ccc;
+            background-color: #ffffff;
+            color: #333;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none; /* Asegurar que no parezca un enlace HTML */
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .category-button.active {
+            border-color: var(--color-acento, red);
+            background-color: #ffe0e0;
+        }
+        .category-button:hover {
+            background-color: #f0f0f0;
+        }
+        /* Ajuste para la barra de búsqueda que ahora está entre botones y título */
+        .barra-busqueda-wrapper {
+            margin-bottom: 20px;
+        }
+        
     </style>
 </head>
 <body>
@@ -277,6 +317,10 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         </div>
     </section>
     
+    <div class="category-buttons">
+        <a href="index.php?categoria=universal" class="category-button" data-category="universal">Partituras Universales</a>
+        <a href="index.php?categoria=popular" class="category-button" data-category="popular">Partituras Populares</a>
+        </div>
     <div class="contenedor-principal">
         
         <aside class="sidebar-filtros">
@@ -356,6 +400,10 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                         
                     </div>
                 </div>
+                
+                <?php if ($categoria_filtro !== 'todo'): ?>
+                <input type="hidden" name="categoria" value="<?php echo htmlspecialchars($categoria_filtro); ?>">
+                <?php endif; ?>
             
             </form>
 
@@ -380,7 +428,12 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                     echo '  <img src="' . $ruta_miniatura_url . '" alt="Miniatura de ' . htmlspecialchars($fila["titulo"]) . '" class="miniatura-catalogo">'; 
                     
                     // 2. NOMBRE DE OBRA
-                    echo '  <h3 class="obra-titulo">' . htmlspecialchars($fila["titulo"]) . '</h3>'; 
+                    // Mostrar OPUS si existe
+                    $titulo_display = htmlspecialchars($fila["titulo"]);
+                    if (!empty($fila["opus"])) {
+                         $titulo_display .= ' (' . htmlspecialchars($fila["opus"]) . ')';
+                    }
+                    echo '  <h3 class="obra-titulo">' . $titulo_display . '</h3>'; 
                     
                     // 3. AÑO DE COMPOSICIÓN (PEQUEÑO)
                     echo '  <p class="obra-anio-pequeno">' . htmlspecialchars($fila["anio_composicion"] ?: 'Año N/D') . '</p>'; 

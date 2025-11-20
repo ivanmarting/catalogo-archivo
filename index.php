@@ -1,6 +1,6 @@
 <?php
 // ===================================================================
-// 1. CONEXIÓN Y CONSULTA SQL (BD y filtros)
+// 1. CONFIGURACIÓN Y CONEXIÓN
 // ===================================================================
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
@@ -9,35 +9,127 @@ define('DB_NAME', 'aosch_bd');
 
 $conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 if ($conexion->connect_error) {
+    // Es CRUCIAL que el servidor MySQL esté corriendo para evitar este error.
     die("Fallo de conexión a la BD: " . $conexion->connect_error);
 }
 
-// ----------------------------------------------------
-// 1.1. CONSULTA PRINCIPAL: Usa JOIN y GROUP BY para contar los PDFs
-// ----------------------------------------------------
+// ===================================================================
+// 2. PROCESAMIENTO DE FILTROS Y ORDENACIÓN (GET)
+// ===================================================================
+
+$clausula_where = [];
+$parametros = ''; 
+$valores = [];    
+
+// --- 2.1. FILTROS CLÁSICOS (WHERE con múltiples OR) ---
+
+// a) Género
+if (!empty($_GET['filtro_genero']) && is_array($_GET['filtro_genero'])) {
+    $generos = array_map('intval', $_GET['filtro_genero']);
+    if (!empty($generos)) {
+        $marcadores = implode(',', array_fill(0, count($generos), '?'));
+        $clausula_where[] = "O.id_genero IN ({$marcadores})";
+        $parametros .= str_repeat('i', count($generos));
+        $valores = array_merge($valores, $generos);
+    }
+}
+
+/*
+// Se ha ELIMINADO la sección de filtro clásico por Editorial (filtro_editorial[])
+// porque solo se requiere la ordenación alfabética.
+*/
+
+// --- 2.2. FILTRO ESPECIAL: INSTRUMENTACIÓN ---
+
+if (!empty($_GET['filtro_instrumento']) && is_array($_GET['filtro_instrumento'])) {
+    $categorias_instr = $_GET['filtro_instrumento'];
+    
+    foreach ($categorias_instr as $categoria) {
+        $cat_escapada = $conexion->real_escape_string($categoria); 
+        
+        // Se mantiene la lógica AND (la obra debe tener instrumentos de TODAS las categorías seleccionadas)
+        $clausula_where[] = "O.id_obra IN (
+            SELECT OI.id_obra 
+            FROM obras_instrumentos OI
+            INNER JOIN instrumentos I ON OI.id_instrumento = I.id_instrumento
+            WHERE I.categoria = ?
+        )";
+        $parametros .= 's';
+        $valores[] = $categoria;
+    }
+}
+
+// --- 2.3. PROCESAMIENTO DE ORDENACIÓN (ÚNICO RADIO GROUP) ---
+$ordenacion_seleccionada = $_GET['ordenar_por'] ?? 'autor_asc'; // Default: Autor ASC
+
+$mapa_ordenacion = [
+    'autor_asc'      => ['campo' => 'A.apellido',        'direccion' => 'ASC'],
+    'autor_desc'     => ['campo' => 'A.apellido',        'direccion' => 'DESC'],
+    'editorial_asc'  => ['campo' => 'E.nombre',          'direccion' => 'ASC'],
+    'editorial_desc' => ['campo' => 'E.nombre',          'direccion' => 'DESC'],
+    'anio_desc'      => ['campo' => 'O.anio_composicion','direccion' => 'DESC'], // Mayor a Menor
+    'anio_asc'       => ['campo' => 'O.anio_composicion','direccion' => 'ASC']  // Menor a Mayor
+];
+
+$orden = $mapa_ordenacion[$ordenacion_seleccionada] ?? $mapa_ordenacion['autor_asc'];
+$campo_orden = $orden['campo'];
+$direccion_orden = $orden['direccion'];
+
+
+// --- 2.4. Búsqueda por Texto ---
+$busqueda_texto = $_GET['busqueda_texto'] ?? '';
+if (!empty($busqueda_texto)) {
+    $texto_busqueda = '%' . $busqueda_texto . '%'; 
+    $clausula_where[] = "(O.titulo LIKE ? OR A.nombre LIKE ? OR A.apellido LIKE ?)";
+    $parametros .= 'sss';
+    $valores = array_merge($valores, [$texto_busqueda, $texto_busqueda, $texto_busqueda]);
+}
+
+
+// --- 2.5. CONSTRUCCIÓN FINAL DE LA CONSULTA SQL ---
+
 $sql = "SELECT 
-    O.id_obra,
-    O.titulo, 
-    O.anio_composicion,
-    O.nro_inventario,
-    O.ruta_miniatura,
-    A.nombre AS autor_nombre, 
-    A.apellido AS autor_apellido,
-    E.nombre AS editorial_nombre,
-    G.nombre AS genero_nombre,
+    O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura,
+    A.nombre AS autor_nombre, A.apellido AS autor_apellido,
+    E.nombre AS editorial_nombre, G.nombre AS genero_nombre,
     COUNT(AP.id_obra) AS cantidad_pdfs 
 FROM obras O
 INNER JOIN autores A ON O.id_autor = A.id_autor
 LEFT JOIN editoriales E ON O.id_editorial = E.id_editorial
 INNER JOIN generos G ON O.id_genero = G.id_genero
-LEFT JOIN archivos_pdf AP ON O.id_obra = AP.id_obra 
-GROUP BY O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura, A.nombre, A.apellido, E.nombre, G.nombre
-ORDER BY A.apellido, O.titulo";
+LEFT JOIN archivos_pdf AP ON O.id_obra = AP.id_obra";
 
-$resultado = $conexion->query($sql);
+// Aplicar la cláusula WHERE
+if (!empty($clausula_where)) {
+    $sql .= " WHERE " . implode(" AND ", $clausula_where);
+}
+
+// Se necesita GROUP BY antes de aplicar ORDER BY
+$sql .= " GROUP BY O.id_obra, O.titulo, O.anio_composicion, O.nro_inventario, O.ruta_miniatura, A.nombre, A.apellido, E.nombre, G.nombre";
+
+// Aplicar la ordenación
+$sql .= " ORDER BY " . $campo_orden . " " . $direccion_orden . ", O.titulo ASC"; 
+
 
 // ----------------------------------------------------
-// 1.2. CONSULTAS para la barra de FILTROS (sidebar) - AHORA CON MÁS CAMPOS
+// 2.6. EJECUCIÓN DE LA CONSULTA PRINCIPAL
+// ----------------------------------------------------
+$stmt = $conexion->prepare($sql);
+
+if ($stmt) {
+    if (!empty($parametros)) {
+        // Ejecución con bind_param
+        $stmt->bind_param($parametros, ...$valores);
+    }
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+} else {
+    die("Error al preparar la consulta SQL: " . $conexion->error);
+}
+
+
+// ----------------------------------------------------
+// 2.7. CONSULTAS para la barra de FILTROS (sidebar)
 // ----------------------------------------------------
 $generos_q = $conexion->query("SELECT id_genero, nombre FROM generos ORDER BY nombre");
 $categorias_q = $conexion->query("SELECT DISTINCT categoria FROM instrumentos ORDER BY categoria");
@@ -53,6 +145,71 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
     <meta charset="UTF-8">
     <title>Catálogo General de Partituras</title>
     <link rel="stylesheet" href="css/estilos.css"> 
+    <script>
+        // Script para rellenar automáticamente los filtros después de la recarga
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Rellenar checkboxes (filtros clásicos)
+            params.forEach((value, key) => {
+                if (key.endsWith('[]')) { 
+                    const name = key.slice(0, -2);
+                    const elements = document.querySelectorAll(`input[name="${key}"][value="${value}"]`);
+                    elements.forEach(el => el.checked = true);
+                    
+                    // Asegurar que el collapse (toggle-checkbox) esté abierto
+                    const idToggle = `toggle-${name.replace('filtro_', '')}`;
+                    const toggleCheckbox = document.getElementById(idToggle);
+                    if (toggleCheckbox) {
+                        toggleCheckbox.checked = true;
+                    }
+                }
+            });
+
+            // Rellenar campos de Ordenación
+            const ordenarPor = params.get('ordenar_por') || 'autor_asc'; // Usar default si no existe
+            const radioOrder = document.querySelector(`input[name="ordenar_por"][value="${ordenarPor}"]`);
+            if (radioOrder) radioOrder.checked = true;
+            
+            // Abrir el toggle de la sección de Ordenar
+            const toggleOrderCheckbox = document.getElementById('toggle-ordenar');
+            if (toggleOrderCheckbox) {
+                toggleOrderCheckbox.checked = true;
+            }
+            
+
+            // Rellenar campo de Búsqueda
+            const busquedaTexto = params.get('busqueda_texto');
+            if (busquedaTexto) {
+                document.querySelector('.barra-busqueda').value = busquedaTexto;
+            }
+        });
+
+        // Script para que el input de Búsqueda rápida envíe el formulario principal
+        document.addEventListener('DOMContentLoaded', function() {
+            const barraBusqueda = document.querySelector('.barra-busqueda');
+            const formFiltros = document.querySelector('.sidebar-filtros form');
+
+            barraBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'busqueda_texto';
+                    hiddenInput.value = this.value;
+
+                    const existingHidden = formFiltros.querySelector('input[name="busqueda_texto"]');
+                    if (existingHidden) {
+                        existingHidden.remove();
+                    }
+
+                    formFiltros.appendChild(hiddenInput);
+                    formFiltros.submit(); 
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -82,23 +239,9 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         
         <aside class="sidebar-filtros">
             <h2>Filtros</h2>
-            <form action="" method="GET">
             
-                <div class="filtro-grupo">
-                    <input type="checkbox" id="toggle-autor" class="toggle-checkbox">
-                    <label for="toggle-autor" class="toggle-label">
-                        Autor <span class="flecha">▶</span>
-                    </label>
-                    <div class="toggle-content">
-                        <?php while ($aut = $autores_q->fetch_assoc()): ?>
-                            <label>
-                                <input type="checkbox" name="filtro_autor[]" value="<?php echo $aut['id_autor']; ?>"> 
-                                <?php echo htmlspecialchars($aut['apellido']) . ", " . htmlspecialchars($aut['nombre']); ?>
-                            </label>
-                        <?php endwhile; ?>
-                    </div>
-                </div>
-
+            <form action="index.php" method="GET">
+            
                 <div class="filtro-grupo">
                     <input type="checkbox" id="toggle-genero" class="toggle-checkbox">
                     <label for="toggle-genero" class="toggle-label">
@@ -106,7 +249,6 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                     </label>
                     <div class="toggle-content">
                         <?php 
-                        // Mover el puntero al inicio si ya se usó la consulta
                         if ($generos_q->num_rows > 0) $generos_q->data_seek(0);
                         while ($gen = $generos_q->fetch_assoc()): ?>
                             <label>
@@ -118,24 +260,9 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                 </div>
 
                 <div class="filtro-grupo">
-                    <input type="checkbox" id="toggle-editorial" class="toggle-checkbox">
-                    <label for="toggle-editorial" class="toggle-label">
-                        Editorial <span class="flecha">▶</span>
-                    </label>
-                    <div class="toggle-content">
-                        <?php while ($edit = $editoriales_q->fetch_assoc()): ?>
-                            <label>
-                                <input type="checkbox" name="filtro_editorial[]" value="<?php echo $edit['id_editorial']; ?>"> 
-                                <?php echo htmlspecialchars($edit['nombre']); ?>
-                            </label>
-                        <?php endwhile; ?>
-                    </div>
-                </div>
-
-                <div class="filtro-grupo">
                     <input type="checkbox" id="toggle-instrumentacion" class="toggle-checkbox">
                     <label for="toggle-instrumentacion" class="toggle-label">
-                        Instrumentación <span class="flecha">▶</span>
+                        Instrumentación (Categoría) <span class="flecha">▶</span>
                     </label>
                     <div class="toggle-content">
                         <?php 
@@ -148,34 +275,52 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                         <?php endwhile; ?>
                     </div>
                 </div>
-
+                
+                <hr>
+                
                 <div class="filtro-grupo">
-                    <input type="checkbox" id="toggle-anio" class="toggle-checkbox">
-                    <label for="toggle-anio" class="toggle-label">
-                        Año de Composición <span class="flecha">▶</span>
+                    <input type="checkbox" id="toggle-ordenar" class="toggle-checkbox">
+                    <label for="toggle-ordenar" class="toggle-label">
+                        Clasificación y Ordenación <span class="flecha">▶</span>
                     </label>
                     <div class="toggle-content">
-                        <?php while ($anio = $anios_q->fetch_assoc()): ?>
-                            <label>
-                                <input type="checkbox" name="filtro_anio[]" value="<?php echo $anio['anio_composicion']; ?>"> 
-                                <?php echo htmlspecialchars($anio['anio_composicion']); ?>
-                            </label>
-                        <?php endwhile; ?>
+                        
+                        <h3>Autor (Alfabético)</h3>
+                        <label>
+                            <input type="radio" name="ordenar_por" value="autor_asc"> Ascendente (A-Z)
+                        </label>
+                        <label>
+                            <input type="radio" name="ordenar_por" value="autor_desc"> Descendente (Z-A)
+                        </label>
+                        
+                        <h3>Editorial (Alfabético)</h3>
+                        <label>
+                            <input type="radio" name="ordenar_por" value="editorial_asc"> Ascendente (A-Z)
+                        </label>
+                        <label>
+                            <input type="radio" name="ordenar_por" value="editorial_desc"> Descendente (Z-A)
+                        </label>
+
+                        <h3>Año de Composición</h3>
+                        <label>
+                            <input type="radio" name="ordenar_por" value="anio_desc"> Mayor a Menor
+                        </label>
+                        <label>
+                            <input type="radio" name="ordenar_por" value="anio_asc"> Menor a Mayor
+                        </label>
+                        
                     </div>
                 </div>
             
-                <button type="submit" class="btn-filtrar">Aplicar Filtros</button>
+                <button type="submit" class="btn-filtrar" style="background-color: var(--color-acento);">Aplicar Filtros</button>
 
             </form>
 
-            <hr>
-            <h3>Ordenar</h3>
-            <label><input type="radio" checked> Autor (Apellido)</label>
         </aside>
 
         <main class="catalogo-contenido">
             
-            <input type="text" placeholder="Búsqueda rápida..." class="barra-busqueda">
+            <input type="text" placeholder="Búsqueda rápida por Título o Autor (Presiona Enter)..." class="barra-busqueda" value="<?php echo htmlspecialchars($busqueda_texto); ?>">
             <h1>Catálogo General de Partituras</h1>
             
             <div class="catalogo-listado">
@@ -211,9 +356,11 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                     echo '</div>'; 
                 }
             } else {
-                echo "<p class='mensaje-catalogo-vacio'>No hay obras cargadas en el catálogo. ¡Sube tu primera obra!</p>";
+                echo "<p class='mensaje-catalogo-vacio'>No se encontraron obras que coincidan con los filtros seleccionados.</p>";
             }
             
+            // Cerrar el statement y la conexión
+            if (isset($stmt)) $stmt->close();
             $conexion->close();
             ?>
             
@@ -227,10 +374,10 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
               <div class="footer-col footer-nav">
                   <h4>Navegación Rápida</h4>
                   <ul>
-                      <li><a href="../index.php">Inicio</a></li>
-                      <li><a href="nosotros.php">Nosotros</a></li>
-                      <li><a href="contacto.php">Contacto</a></li>
-                      <li><a href="cargar_obra.php">Cargar Archivo</a></li>
+                      <li><a href="index.php">Inicio</a></li>
+                      <li><a href="Pages/nosotros.php">Nosotros</a></li>
+                      <li><a href="Pages/contacto.php">Contacto</a></li>
+                      <li><a href="Pages/cargar_obra.php">Cargar Archivo</a></li>
                   </ul>
               </div>
               

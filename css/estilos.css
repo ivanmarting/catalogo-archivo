@@ -16,6 +16,23 @@
     --color-sombra: rgba(0, 0, 0, 0.1);
 }
 
+/* ========================================================== */
+/* CORRECCIÓN #1 y #2: REINICIO UNIVERSAL PARA SCROLL HORIZONTAL */
+/* ========================================================== */
+/* box-sizing: border-box asegura que padding y border se incluyan dentro del width, no sumen extra. */
+* {
+    box-sizing: border-box; 
+}
+
+/* Oculta el scroll horizontal que puedan causar elementos desbordados y reinicia márgenes. */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; 
+}
+/* ========================================================== */
+
+
 body {
     font-family: 'Roboto', sans-serif;
     background: #f2f0ec;
@@ -79,17 +96,21 @@ nav a:hover {
 }
 
 /* Sidebar de Filtros (para index.php) */
+/* Sidebar de Filtros (para index.php) */
 .sidebar-filtros {
     width: 280px;
     padding: 20px;
     background-color: var(--color-fondo-filtro);
     
-    /* MODIFICADO: Borde rojo sutil */
     border: 1px solid var(--color-sombra); 
-    
     box-shadow: 0 2px 4px var(--color-sombra);
     border-radius: 5px;
-    height: fit-content;
+    
+    height: fit-content; 
+    
+    /* MODIFICACIÓN CLAVE: Agregamos/confirmamos position: sticky */
+    position: sticky; /* Hace que el elemento se comporte como relative hasta que el scroll llegue al punto de 'top' */
+    top: 20px;       /* Distancia desde la parte superior de la ventana donde se "pegará" */
 }
 
 .sidebar-filtros h2 {
@@ -332,18 +353,21 @@ form p a {
 /* SECCIONES ESPECÍFICAS (BANNER, ASIDE) */
 /* ---------------------------------------------------- */
 
+/* CORRECCIÓN #3: Eliminar padding horizontal que causa desbordamiento */
 .banner {
     width: 100%;
     background-color: #f2f0ec;
-    padding: 60px 40px;
+    padding: 60px 0; /* Solución: 60px vertical, 0px horizontal */
     border-bottom: 3px solid var(--color-acento);
 }
 
+/* CORRECCIÓN #4: Mover el padding al contenedor interno para mantener el margen visual */
 .banner-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
+    padding: 0 20px; /* Añadido padding interno */
     margin: 0 auto;
     gap: 40px;
 }

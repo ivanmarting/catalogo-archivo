@@ -14,7 +14,7 @@ if ($conexion->connect_error) {
 }
 
 // ===================================================================
-// 2. PROCESAMIENTO DE FILTROS Y ORDENACIÓN (GET) (MODIFICADO)
+// 2. PROCESAMIENTO DE FILTROS Y ORDENACIÓN (GET)
 // ===================================================================
 
 $clausula_where = [];
@@ -156,8 +156,6 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         document.addEventListener('DOMContentLoaded', function() {
             const params = new URLSearchParams(window.location.search);
             
-            // ... (rest of filtering logic remains unchanged) ...
-            
             // Rellenar checkboxes (filtros clásicos)
             params.forEach((value, key) => {
                 if (key.endsWith('[]')) { 
@@ -192,50 +190,64 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
                 document.querySelector('.barra-busqueda').value = busquedaTexto;
             }
             
-            // ⚠️ Nuevo script: Detectar el botón de Limpiar Filtros
+            // ⚠️ Script: Detectar el botón de Limpiar Filtros
             const botonLimpiar = document.getElementById('btn-limpiar');
             if (botonLimpiar) {
                 botonLimpiar.addEventListener('click', function(e) {
                     e.preventDefault(); 
                     
-                    // Al limpiar, redirigir al index sin filtros ni categoría
+                    // Al limpiar, redirigir a index.php (vacío de filtros ni categoría)
                     window.location.href = 'index.php'; 
                 });
             }
             
-            // ⚠️ Nuevo script: Marcar botón de categoría activo
-            const categoriaActiva = params.get('categoria');
-            if (categoriaActiva) {
-                const btnActivo = document.querySelector(`.category-button[data-category="${categoriaActiva}"]`);
-                if (btnActivo) {
-                    btnActivo.classList.add('active');
-                }
+            // ⚠️ Script: Marcar botón de categoría activo (usando la nueva clase y estructura)
+            const categoriaActiva = params.get('categoria') || 'todo';
+            const btnActivo = document.querySelector(`.category-button[data-category="${categoriaActiva}"]`);
+            if (btnActivo) {
+                btnActivo.classList.add('active');
             }
         });
 
         // Script para que el input de Búsqueda rápida envíe el formulario principal
         document.addEventListener('DOMContentLoaded', function() {
-            const barraBusqueda = document.querySelector('.barra-busqueda');
+            // Buscamos la barra dentro del nuevo wrapper
+            const barraBusqueda = document.querySelector('#main-search-wrapper .barra-busqueda');
             const formFiltros = document.querySelector('.sidebar-filtros form');
 
-            barraBusqueda.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); 
-                    
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'busqueda_texto';
-                    hiddenInput.value = this.value;
+            if (barraBusqueda && formFiltros) {
+                barraBusqueda.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault(); 
+                        
+                        // Creamos un formulario temporal para la búsqueda rápida
+                        const tempForm = document.createElement('form');
+                        tempForm.action = 'index.php';
+                        tempForm.method = 'GET';
 
-                    const existingHidden = formFiltros.querySelector('input[name="busqueda_texto"]');
-                    if (existingHidden) {
-                        existingHidden.remove();
+                        // 1. Campo de búsqueda
+                        const inputBusqueda = document.createElement('input');
+                        inputBusqueda.type = 'hidden';
+                        inputBusqueda.name = 'busqueda_texto';
+                        inputBusqueda.value = this.value;
+                        tempForm.appendChild(inputBusqueda);
+
+                        // 2. Campo de categoría (para mantener el filtro activo)
+                        const params = new URLSearchParams(window.location.search);
+                        const categoria = params.get('categoria');
+                        if (categoria) {
+                            const hiddenCategoria = document.createElement('input');
+                            hiddenCategoria.type = 'hidden';
+                            hiddenCategoria.name = 'categoria';
+                            hiddenCategoria.value = categoria;
+                            tempForm.appendChild(hiddenCategoria);
+                        }
+                        
+                        document.body.appendChild(tempForm);
+                        tempForm.submit(); 
                     }
-
-                    formFiltros.appendChild(hiddenInput);
-                    formFiltros.submit(); 
-                }
-            });
+                });
+            }
         });
     </script>
     <style>
@@ -244,9 +256,9 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             display: block;
             width: 100%;
             padding: 8px;
-            margin-top: 5px; /* Separación del botón de Aplicar Filtros */
-            background-color: #f8f9fa; /* Color más claro o secundario */
-            color: #6c757d; /* Color de texto secundario */
+            margin-top: 5px; 
+            background-color: #f8f9fa; 
+            color: #6c757d; 
             border: 1px solid #ced4da;
             border-radius: 4px;
             cursor: pointer;
@@ -260,13 +272,23 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             color: #495057;
         }
         
+        /* Contenedor principal para centrar botones y búsqueda horizontalmente */
+        .search-area-wrapper {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            padding: 10px 0;
+            width: 100%; 
+            margin-bottom: 30px; 
+        }
+
         /* Estilos para los botones de categoría */
         .category-buttons {
             display: flex;
-            justify-content: center;
+            justify-content: center; 
             gap: 15px;
-            margin-top: 20px; /* Separación del banner/título */
-            margin-bottom: 20px;
+            margin-bottom: 10px; 
+            width: 100%; 
         }
         .category-button {
             padding: 10px 20px;
@@ -276,8 +298,11 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
             cursor: pointer;
             border-radius: 5px;
             font-weight: bold;
-            text-decoration: none; /* Asegurar que no parezca un enlace HTML */
+            text-decoration: none; 
             transition: background-color 0.2s, border-color 0.2s;
+            text-align: center; 
+            flex-grow: 1; 
+            max-width: 150px; 
         }
         .category-button.active {
             border-color: var(--color-acento, red);
@@ -286,9 +311,44 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         .category-button:hover {
             background-color: #f0f0f0;
         }
-        /* Ajuste para la barra de búsqueda que ahora está entre botones y título */
-        .barra-busqueda-wrapper {
-            margin-bottom: 20px;
+        
+        /* La barra de búsqueda ahora usa un ancho flexible */
+        .barra-busqueda {
+            width: 80%; 
+            margin: 0; 
+        }
+        
+        /* 1. ELIMINAR LA CAJA DE FONDO (caja roja/exterior) */
+        .sidebar-filtros {
+            /* Hacemos transparente el aside */
+            background-color: transparent !important;
+            padding: 0 !important; 
+            box-shadow: none !important;
+            margin: 0 !important; 
+            width: 100%;
+        }
+
+        /* 2. MANTENER LA CAJA DE LOS BOTONES (caja verde/blanca) */
+        /* Eliminamos el padding superior y margen negativo que cubría el espacio transparente. */
+        .sidebar-filtros form {
+            background-color: #fff;
+            padding: 0 20px 20px 20px; /* Quitamos el padding superior (top: 0), mantenemos el resto */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            width: 100%;
+            box-sizing: border-box; 
+            /* AÑADIDO: Margen negativo para eliminar el recuadro transparente superior */
+            margin-top: -15px; /* Ajustar este valor puede ser necesario */
+            /* Ajuste el padding-top del formulario para que el botón toque el borde */
+            padding-top: 20px;
+        }
+
+        /* Si el espacio lateral persiste, es debido al width/padding/margin del aside.
+           Añadimos un ajuste final para eliminar el padding lateral del formulario. */
+        .sidebar-filtros form {
+            /* Reajustamos para pegarlo a los bordes laterales del área de la barra lateral */
+            margin: -15px 0 0 0; 
+            padding: 20px; 
         }
         
     </style>
@@ -317,14 +377,9 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         </div>
     </section>
     
-    <div class="category-buttons">
-        <a href="index.php?categoria=universal" class="category-button" data-category="universal">Partituras Universales</a>
-        <a href="index.php?categoria=popular" class="category-button" data-category="popular">Partituras Populares</a>
-        </div>
     <div class="contenedor-principal">
         
         <aside class="sidebar-filtros">
-            <h2>Filtros</h2>
             
             <form action="index.php" method="GET">
             
@@ -411,7 +466,17 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
 
         <main class="catalogo-contenido">
             
-            <input type="text" placeholder="Búsqueda rápida por Título o Autor (Presiona Enter)..." class="barra-busqueda" value="<?php echo htmlspecialchars($busqueda_texto); ?>">
+            <div class="search-area-wrapper" id="main-search-wrapper">
+                
+                <div class="category-buttons">
+                    <a href="index.php?categoria=todo" class="category-button" data-category="todo">Todas</a>
+                    <a href="index.php?categoria=universal" class="category-button" data-category="universal">Universales</a>
+                    <a href="index.php?categoria=popular" class="category-button" data-category="popular">Populares</a>
+                </div>
+                
+                <input type="text" placeholder="Búsqueda rápida por Título o Autor (Presiona Enter)..." class="barra-busqueda" value="<?php echo htmlspecialchars($busqueda_texto); ?>">
+                
+            </div>
             <h1>Catálogo General de Partituras</h1>
             
             <div class="catalogo-listado">
@@ -464,27 +529,7 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         </main>
         
     </div> 
-     <button id="chat-button" title="Abrir Chat de IA">
-        <img src="src/comunicacion.png" alt="Icono" style="width: 50px; height: auto;">
-    </button>
-
-    <div id="chat-container" class="hidden">
-        <div class="chat-header">
-            Orquestin
-            <button id="close-button">✖</button>
-        </div>
-        <div id="chat-box">
-            <div class="message bot-message">
-                ¡Hola! Soy Orquestin. ¿En qué puedo ayudarte hoy?
-            </div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Escribe tu mensaje..." autocomplete="off">
-            <button id="send-button" title="Enviar mensaje">
-                enter
-            </button>
-        </div>
-    </div>
+    
     <footer>
         <div class="footer-container">   
               <div class="footer-col footer-nav">
@@ -516,7 +561,6 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
       
         </div>
       </footer>
-    
-      <script src="js/script.js"></script>
+
 </body>
 </html>

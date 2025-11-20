@@ -1057,3 +1057,117 @@ footer {
 .btn-filtrar:hover {
     opacity: 0.9;
 }
+/* -------------------------------------- */
+/* 1. Botón Flotante y Posicionamiento */
+/* -------------------------------------- */
+#chat-button {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    transition: transform 0.3s;
+}
+#chat-button:hover {
+    transform: scale(1.05);
+}
+
+/* -------------------------------------- */
+/* 2. Contenedor de la Ventana de Chat */
+/* -------------------------------------- */
+#chat-container {
+    position: fixed;
+    bottom: 120px; /* Sobre el botón */
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background-color: #f8f9fa; /* Fondo claro */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* -------------------------------------- */
+/* 3. Estilos Internos */
+/* -------------------------------------- */
+.chat-header {
+    background-color: #a00;
+    color: white;
+    padding: 10px 15px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#chat-box {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 15px;
+    overflow-y: auto; /* Permite desplazamiento vertical */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+#user-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+#send-button {
+    background-color: #28a745; /* Verde */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Estilos de los mensajes */
+.message {
+    max-width: 80%;
+    padding: 10px;
+    border-radius: 15px;
+    line-height: 1.4;
+}
+.user-message {
+    align-self: flex-end; /* A la derecha */
+    background-color: #dcf8c6; /* Verde claro */
+}
+.bot-message {
+    align-self: flex-start; /* A la izquierda */
+    background-color: #ffffff; /* Blanco */
+    border: 1px solid #eee;
+}

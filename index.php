@@ -368,7 +368,27 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         </main>
         
     </div> 
-    
+     <button id="chat-button" title="Abrir Chat de IA">
+        <img src="src/comunicacion.png" alt="Icono" style="width: 50px; height: auto;">
+    </button>
+
+    <div id="chat-container" class="hidden">
+        <div class="chat-header">
+            Orquestin
+            <button id="close-button">✖</button>
+        </div>
+        <div id="chat-box">
+            <div class="message bot-message">
+                ¡Hola! Soy Orquestin. ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Escribe tu mensaje..." autocomplete="off">
+            <button id="send-button" title="Enviar mensaje">
+                enter
+            </button>
+        </div>
+    </div>
     <footer>
         <div class="footer-container">   
               <div class="footer-col footer-nav">
@@ -400,6 +420,7 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
       
         </div>
       </footer>
-
+    
+      <script src="js/script.js"></script>
 </body>
 </html>

@@ -540,7 +540,7 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
         </div>
         <div id="chat-box">
             <div class="message bot-message">
-                ¡Hola! Soy Orquestin. ¿En qué puedo ayudarte hoy?
+                ¡Hola! Soy Orquestin. Tu asistente IA personal ¿En qué puedo ayudarte hoy?
             </div>
         </div>
         <div class="chat-input-area">

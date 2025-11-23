@@ -108,6 +108,7 @@ $resultado = $conexion->query($sql);
     <div class="panel-container">
         
         <div class="acciones-bar">
+            <a href="solicitudes.php" class="btn-accion" style="background: #E65100;">Ver Solicitudes</a>
             <a href="cargar_obra.php" class="btn-accion">✚ Subir Nueva Obra</a>
             <a href="../index.php" class="btn-accion" style="background:#555;">Ver Sitio Web</a>
         </div>

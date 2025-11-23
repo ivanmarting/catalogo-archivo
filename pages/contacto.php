@@ -13,13 +13,14 @@
 <script src="../js/script.js"></script> 
 <body>
     <header>
-        <nav>
-            <a href="../index.php">Inicio</a>
-            <a href="nosotros.php">Nosotros</a>
-            <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
-            <a href="contacto.php">Contacto</a>
-            <a href="cargar_obra.php">Subir Archivo</a> 
-        </nav>
+    <nav>
+        <a href="../index.php">Inicio</a>
+        <a href="nosotros.php">Nosotros</a>
+        <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
+        <a href="contacto.php">Contacto</a>
+        <!-- Enlace actualizado: Lleva al Login en lugar de Cargar Obra -->
+        <a href="login.php" style="color: #555;">Acceso Admin</a> 
+    </nav>
     </header>
 
 

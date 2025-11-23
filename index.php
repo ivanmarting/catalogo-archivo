@@ -356,13 +356,14 @@ $anios_q = $conexion->query("SELECT DISTINCT anio_composicion FROM obras WHERE a
 <body>
 
     <header> 
-        <nav>
-            <a href="index.php">Inicio</a>
-            <a href="Pages/nosotros.php">Nosotros</a>
-            <a href="index.php"> <img src="src/images.png" alt="Logo" class="logo"> </a>
-            <a href="Pages/contacto.php">Contacto</a>
-            <a href="Pages/cargar_obra.php">Subir Archivo</a> 
-        </nav>
+    <nav>
+        <a href="index.php">Inicio</a>
+        <a href="Pages/nosotros.php">Nosotros</a>
+        <a href="index.php"> <img src="src/images.png" alt="Logo" class="logo"> </a>
+        <a href="Pages/contacto.php">Contacto</a>
+        <!-- Enlace actualizado -->
+        <a href="Pages/login.php" style="color: #555;">Acceso Admin</a> 
+    </nav>
     </header>
     
     <section class="banner">

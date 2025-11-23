@@ -24,13 +24,15 @@ try {
     $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Consultamos las obras, uniendo con autores y géneros para darle contexto a Orquestin
-    // Limitamos a 50 para no saturar el prompt si tienes miles de obras
+    // --- CAMBIO PRINCIPAL AQUÍ ---
+    // Agregamos una subconsulta: (SELECT COUNT(*) ...) as cantidad_pdfs
+    // Esto cuenta cuántos archivos hay en la tabla archivos_pdf para cada obra.
     $sql = "SELECT 
                 o.titulo, 
                 CONCAT(a.nombre, ' ', a.apellido) as autor_completo,
                 g.nombre as genero,
-                o.anio_composicion
+                o.anio_composicion,
+                (SELECT COUNT(*) FROM archivos_pdf WHERE id_obra = o.id_obra) as cantidad_pdfs
             FROM obras o
             LEFT JOIN autores a ON o.id_autor = a.id_autor
             LEFT JOIN generos g ON o.id_genero = g.id_genero
@@ -39,18 +41,21 @@ try {
     $stmt = $pdo->query($sql);
     $obras = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Convertimos los datos de la DB en texto legible para Gemini
     if ($obras) {
-        $inventario_texto = "ESTE ES EL INVENTARIO ACTUAL DE LA BIBLIOTECA (Úsalo para responder si el usuario pregunta qué tenemos):\n";
+        $inventario_texto = "ESTE ES EL INVENTARIO ACTUAL DE LA BIBLIOTECA (Úsalo para responder):\n";
         foreach ($obras as $obra) {
-            $inventario_texto .= "- Obra: '{$obra['titulo']}' de {$obra['autor_completo']} ({$obra['genero']}, {$obra['anio_composicion']})\n";
+            // Agregamos la información de cantidad_pdfs al texto
+            $partituras_msg = $obra['cantidad_pdfs'] > 0 
+                ? "{$obra['cantidad_pdfs']} archivo(s) disponible(s)" 
+                : "Sin archivos digitales";
+                
+            $inventario_texto .= "- '{$obra['titulo']}' de {$obra['autor_completo']} ({$obra['genero']}). Estado: $partituras_msg.\n";
         }
     } else {
         $inventario_texto = "Actualmente la biblioteca está vacía.";
     }
 
 } catch (PDOException $e) {
-    // Si falla la base de datos, seguimos funcionando pero sin datos
     $inventario_texto = "Nota: No pude acceder al inventario de la base de datos por un error técnico.";
     error_log("Error DB: " . $e->getMessage());
 }
@@ -75,6 +80,7 @@ Te gusta hacer bromas sobre lo complejo que es tocar el piano.
 - Si preguntan por ti, por como eres, o quien eres, puedes hacerlo, puedes decir que no tienes edad, te gusta el Mate, te gusta Vivaldi o que
 no eres muy bueno tocando el piano. Pero no puedes decir todos a la vez, solo diras uno o dos datos cada vez que te pregunten,
 inclusive puedes inventarte algun dato sobre ti para entretener al espectador.
+- Si te hablan en otro idioma, podras hacerlo, eres poliglota y mas importante, hablas el lenguaje universal, que es la música.
 
 INFORMACIÓN DE LA BASE DE DATOS:
 $inventario_texto

@@ -232,23 +232,14 @@ a {
 .filtro-grupo {
     margin-bottom: 20px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
+    padding-bottom: 15px;           
+    box-shadow: none;   
+    width: auto;
 }
 
-/* =========================================
-   ESTILO "LIMA" (Minimalista & Limpio)
-   ========================================= */
-
-/* 1. Contenedor Principal (Limpio, sin tarjeta cerrada) */
-.sidebar-filtros .form-filtros {
-    background: transparent; 
-    padding: 0;         
-    border: none;            
-    box-shadow: none;        
-}
 
 /* 2. Encabezado "Filtrar por" */
-.filtros-header h3 {
+.filtro-grupo h3 {
     font-family: 'Roboto', sans-serif; 
     font-size: 1.8rem;       
     font-weight: 400;        
@@ -258,22 +249,8 @@ a {
     text-transform: none;    
 }
 
-/* 3. Subtítulos (Como "Color", "Talle", etc.) */
-.filtro-label {
-    display: flex;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333; /* Texto más oscuro para legibilidad */
-    margin-bottom: 12px;
-    margin-top: 25px; 
-}
-
-.filtro-grupo {
-    margin-bottom: 10px;
-}
-
 /* 4. CHECKBOXES CIRCULARES (Lado Izquierdo) */
-.checkbox-scroll-container {
+.checkbox-label {
     max-height: 300px;
     overflow-y: auto;
     border: none;      
@@ -281,97 +258,8 @@ a {
     background: transparent;
 }
 
-.checkbox-item {
-    display: flex;          /* Flexbox para alinear círculo y texto */
-    align-items: center;    /* Centrado verticalmente */
-    justify-content: flex-start; /* Forzar todo a la IZQUIERDA */
-    padding: 6px 0;    
-    cursor: pointer;
-    font-size: 1rem;
-    color: #666;
-    transition: color 0.2s;
-    width: 100%;            /* Ocupar todo el ancho */
-}
-
-.checkbox-item:hover {
+.checkbox-label:hover {
     color: var(--color-acento); 
-}
-
-/* Ocultar el input nativo (el cuadrado feo) */
-.checkbox-item input {
-    display: none; 
-}
-
-/* El círculo personalizado (A la izquierda) */
-.checkmark {
-    height: 18px;           /* Tamaño del círculo */
-    width: 18px;
-    background-color: #fff;
-    border: 1px solid #999; 
-    border-radius: 50%;     /* Redondo */
-    margin-right: 12px;     /* Espacio entre círculo y texto */
-    display: flex;          /* Para centrar el puntito interior */
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;         /* IMPORTANTE: Evita que el círculo se aplaste */
-    position: relative;
-    transition: all 0.2s;
-}
-
-/* Estado: Marcado (Checked) - Borde de color */
-.checkbox-item input:checked + .checkmark {
-    border-color: var(--color-acento); 
-}
-
-/* El puntito interior cuando está marcado */
-.checkbox-item input:checked + .checkmark:after {
-    content: "";
-    display: block;
-    width: 10px;            /* Tamaño del puntito */
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-acento); 
-}
-
-/* Texto del género */
-.texto {
-    font-weight: 400;
-    text-align: left; /* Asegurar texto a la izquierda */
-}
-
-/* 5. Inputs (Búsqueda y Select) */
-.input-con-icono input, 
-.select-wrapper select {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #ccc; 
-    border-radius: 6px;     
-    background: #fff;
-    font-size: 1rem;
-    color: #555;
-}
-
-.input-con-icono input:focus,
-.select-wrapper select:focus {
-    border-color: #333;     
-    outline: none;
-}
-
-.input-con-icono {
-    position: relative;
-}
-
-.input-con-icono .icono {
-    position: absolute;
-    right: 15px; 
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-    pointer-events: none; /* Evita que el icono bloquee clicks */
-}
-
-.input-con-icono input {
-    padding-right: 40px; /* Espacio para el icono a la derecha */
 }
 
 
@@ -974,12 +862,17 @@ th {
 .login-form input {
     background: #f9f9f9;
     transition: all 0.3s;
+    width: 200px;
+    height: 50px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-radius: 50px;
 }
 
 .login-form input:focus {
     background: #fff;
     border-color: var(--color-acento);
-    box-shadow: 0 0 0 4px rgba(204, 0, 0, 0.1);
+    box-shadow: 0 0 0 10px rgba(204, 0, 0, 0.1);
 }
 
 .login-btn {

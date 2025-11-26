@@ -39,47 +39,17 @@ $generos_q = $conexion->query("SELECT * FROM generos ORDER BY nombre");
     <meta charset="UTF-8">
     <title>Editar: <?php echo htmlspecialchars($obra['titulo']); ?></title>
     <link rel="stylesheet" href="../css/estilos.css">
-    <style>
-        /* Estilos específicos para el formulario de edición */
-        .edit-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-top: 5px solid var(--color-acento);
-        }
-        .btn-volver {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #666;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn-volver:hover { color: #000; }
-        
-        .form-section-title {
-            color: var(--color-principal);
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-        
-        /* Estilo para los inputs */
-        .edit-container label { display: block; margin-top: 10px; font-weight: bold; }
-        .edit-container input, .edit-container select { 
-            width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; 
-        }
-    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
     <header>
-        <nav>
-            <a href="../index.php" target="_blank">Ver Sitio Público ↗</a>
-            <a href="panel.php">Volver al Panel</a>
-        </nav>
+             <a href="../index.php">Inicio</a>
+             <a href="nosotros.php">Nosotros</a>
+             <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
+             <a href="contacto.php">Contacto</a>
+             <a href="cargar_obra.php">Subir Archivo</a>
+    
+             <button class="menu-toggle-btn">&#9776;</button> 
     </header>
 
     <div class="edit-container">
@@ -132,5 +102,6 @@ $generos_q = $conexion->query("SELECT * FROM generos ORDER BY nombre");
             <button type="submit" style="margin-top:30px; background: #2196F3; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;">💾 Guardar Cambios</button>
         </form>
     </div>
+    <script src="../js/script.js"></script>
 </body>
 </html>

@@ -1,0 +1,429 @@
+/* ========================================================== */
+/* 1. ESTILOS GLOBALES (Aplican a todo, incluido Desktop)     */
+/* ========================================================== */
+
+/* Ocultar elementos que son SOLO para móvil en la versión PC */
+.btn-toggle-filtros,
+.menu-toggle-btn,
+.btn-cerrar-filtros {
+    display: none; 
+}
+
+/* ========================================================== */
+/* 2. MEDIA QUERIES (SOLO PARA MÓVILES - Hasta 768px)         */
+/* ========================================================== */
+
+@media (max-width: 768px) {
+
+    /* --- A. CORRECCIÓN DE ESPACIO BLANCO Y ANCHOS --- */
+    
+    /* 1. Regla Universal */
+    * {
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Cortar desbordamientos */
+    html, body {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important; 
+        position: relative;
+    }
+
+    /* 3. CONTENEDOR PRINCIPAL (CORREGIDO) */
+    .contenedor-principal {
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 15px !important; /* Margen de seguridad lateral */
+        
+        display: flex;
+        flex-direction: column;
+        
+        /* ¡ESTO HACE QUE LOS ELEMENTOS SE ESTIREN Y OCUPEN EL ANCHO! */
+        align-items: stretch !important; 
+    }
+
+    /* 4. Inputs y Buscadores */
+    .barra-busqueda, 
+    .search-area-wrapper,
+    input[type="text"] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+
+    /* --- B. HEADER Y NAVEGACIÓN --- */
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        padding: 10px 0;
+        background: #fff;
+    }
+
+    nav {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+    }
+
+    /* LOGO: Izquierda */
+    nav a:nth-child(3) {
+        order: -1;
+        margin-right: auto; 
+        padding: 0;
+    }
+    
+    .logo { width: 50px; }
+
+    /* MENÚ DESPLEGABLE */
+    nav a:not(:nth-child(3)) {
+        display: none;
+        width: 100%;
+        text-align: center;
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+        padding: 15px;
+        order: 10;
+    }
+
+    nav.menu-activo a:not(:nth-child(3)) {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .menu-toggle-btn {
+        display: block; 
+        background: none;
+        border: none;
+        font-size: 30px;
+        cursor: pointer;
+        color: var(--color-principal);
+        padding: 0 10px;
+    }
+
+    /* --- C. BARRA DE FILTROS (SIDEBAR) --- */
+    .sidebar-filtros {
+        position: fixed;
+        top: 0; left: 0;
+        width: 85%; height: 100vh;
+        background: #fff;
+        z-index: 2000;
+        overflow-y: auto;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        transform: translateX(-100%); 
+        transition: transform 0.3s ease-in-out;
+        margin: 0; padding: 20px; max-width: none;
+    }
+
+    .sidebar-filtros.filtros-activos {
+        transform: translateX(0);
+    }
+
+    .btn-toggle-filtros {
+        display: block; 
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #333;
+        color: white;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        border: none;
+        font-size: 1em;
+        cursor: pointer;
+    }
+    
+    .btn-cerrar-filtros {
+        display: block;
+        width: 100%;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    /* --- D. BOTONES DE CATEGORÍA --- */
+    .category-buttons {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    
+    .category-button {
+        flex: 1;
+        width: auto;
+        padding: 12px 5px;
+        min-width: 90px;
+        font-size: 0.9em;
+    }
+
+    /* --- E. CARDS DE OBRAS (CORREGIDO) --- */
+    .catalogo-listado {
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        width: 100% !important;
+        
+        /* COLCHÓN INFERIOR: Espacio extra para que el chat no tape la última card */
+        padding-bottom: 120px !important; 
+    }
+
+    .obra-card {
+        display: grid;
+        grid-template-columns: 130px 1fr; 
+        grid-template-rows: auto auto auto auto 1fr;
+        gap: 0 15px;
+        text-align: left;
+        padding: 15px;
+        min-height: 180px;
+        height: auto;
+        
+        /* BORDE IZQUIERDO ROJO (Estilo Archivador) */
+        border-top: 1px solid rgba(0,0,0,0.05); 
+        border-left: 5px solid var(--color-acento);
+        border-right: 1px solid rgba(0,0,0,0.05);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .miniatura-catalogo {
+        grid-column: 1 / 2; grid-row: 1 / 6;
+        width: 100%; height: 100%;
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 4px; margin: 0;
+    }
+
+    .obra-titulo {
+        grid-column: 2 / 3; grid-row: 1;
+        font-size: 1.1em; margin: 0 0 5px 0;
+        word-wrap: break-word;
+    }
+
+    .obra-anio-pequeno {
+        grid-column: 2 / 3; grid-row: 2; margin-bottom: 5px;
+    }
+
+    .obra-autor-apellido, .obra-autor-nombre {
+        grid-column: 2 / 3; margin: 0; font-size: 0.95em;
+    }
+
+    .obra-card .obra-enlace {
+        grid-column: 2 / 3; margin-top: 10px; align-self: end;
+    }
+
+    .btn-solicitar-acceso {
+        padding: 6px 12px; font-size: 0.8em; display: inline-block; width: auto;
+    }
+
+    /* --- F. BANNER Y OTROS --- */
+    .banner-content, .footer-container {
+        flex-direction: column; text-align: center; padding: 0 15px; gap: 30px;
+    }
+    .banner { padding: 40px 15px; }
+    .banner-text h1 { font-size: 1.8em; }
+    .banner-image { display: none; }
+    .socials { justify-content: center; }
+
+    /* --- G. CHATBOT RESPONSIVE (CORREGIDO Y CENTRADO) --- */
+    #chat-container {
+        width: 90% !important;
+        max-width: 340px !important;
+        height: 60vh !important;
+        
+        /* CENTRADO PERFECTO SIN EMPUJAR MÁRGENES */
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        
+        bottom: 85px !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+    }
+
+    #chat-button {
+        position: fixed !important;
+        right: 15px !important;
+        bottom: 15px !important;
+        width: 55px;
+        height: 55px;
+        z-index: 9990;
+        margin: 0 !important;
+    }
+
+
+    /* --- H. PANEL DE ADMIN (SOLO MÓVIL) --- */
+
+    /* --- H. PANEL DE ADMIN (APP-LIKE MÓVIL) --- */
+    
+    /* Contenedores ocupan ancho completo */
+    .login-container,
+    .panel-container,
+    .edit-container {
+        width: 100% !important;
+        margin: 20px 0 !important;
+        padding: 20px !important;
+        box-shadow: none !important; /* Quitamos sombra pesada en móvil */
+        border-radius: 0;
+        border-top: none;
+    }
+    
+    /* Header del panel */
+    .panel-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+        padding: 20px 15px;
+    }
+    
+    /* Barra de botones (Acciones) en columna */
+    .acciones-bar {
+        flex-direction: column;
+        width: 100%;
+    }
+    .btn-accion {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    /* TRANSFORMACIÓN DE TABLA A TARJETAS (CARD VIEW) */
+    .tabla-gestion {
+        display: block;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .tabla-gestion thead { 
+        display: none; /* Ocultamos cabeceras de tabla */
+    }
+    
+    .tabla-gestion tbody, 
+    .tabla-gestion tr, 
+    .tabla-gestion td {
+        display: block; 
+        width: 100%;
+    }
+    
+    .tabla-gestion tr {
+        background: #fff;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    .tabla-gestion td {
+        padding: 5px 0;
+        border: none;
+        text-align: left;
+    }
+
+    /* Estilos específicos para simular datos de tarjeta */
+    .tabla-gestion td:nth-child(2) { /* Título de la obra */
+        font-size: 1.2em;
+        font-weight: 700;
+        color: var(--color-acento);
+        margin-bottom: 5px;
+    }
+    
+    .tabla-gestion td:nth-child(3) { /* Autor */
+        font-style: italic;
+        color: #666;
+        margin-bottom: 15px;
+    }
+    
+    /* Fila de botones (Editar/Eliminar) */
+    .tabla-gestion .acciones-row {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .acciones-row a {
+        flex: 1; /* Botones ocupan 50% cada uno */
+        text-align: center;
+        padding: 12px;
+        background: #f5f5f5;
+        border-radius: 4px;
+        margin: 0;
+    }
+
+    /* Solicitudes en Móvil */
+    .request-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .request-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .btn-aprobar { width: 100%; text-align: center; }
+
+
+
+    /* --- RESPONSIVE DE PÁGINA NOSOTROS --- */
+    
+    /* 1. Historia: Columna vertical */
+
+    /* Dentro del media query 768px */
+    
+    .contenedor-imagen-historia {
+        width: 100%;       /* Ocupa todo el ancho en móvil */
+        height: 250px;     /* Altura más pequeña para celular */
+        min-height: 250px;
+        margin-bottom: 20px; /* Separación del texto */
+    }
+    .fondo-gradiente { width: 100%; min-height: 250px; }
+    
+    /* 2. Noticias: Columna y textos ajustados */
+    .seccion-noticias {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 40px 15px;
+    }
+    .titulo-principal { font-size: 2.5em; }
+    .cards-grid { grid-template-columns: 1fr; } /* Tarjetas una abajo de otra */
+    
+    /* 3. Carruseles: Uno abajo del otro */
+    .contenedor-carruseles {
+        grid-template-columns: 1fr; /* 1 sola columna */
+    }
+    
+    /* 4. Digitalización */
+    .digitalizacion-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+
+} /* <--- FIN DEL MEDIA QUERY */
+
+
+/* ========================================================== */
+/* 3. ANIMACIONES                                             */
+/* ========================================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

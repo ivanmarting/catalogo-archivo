@@ -12,43 +12,7 @@ if (isset($_SESSION['usuario_id'])) {
     <meta charset="UTF-8">
     <title>Acceso Administrativo</title>
     <link rel="stylesheet" href="../css/estilos.css">
-    <style>
-        /* Estilos específicos para el login */
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 40px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            border-top: 5px solid var(--color-acento);
-        }
-        .login-container h2 {
-            text-align: center;
-            color: var(--color-principal);
-            margin-bottom: 30px;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            background: var(--color-acento);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .btn-login:hover { background: #a00; }
-        .alerta-error {
-            background: #ffebee;
-            color: #c62828;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
     <!-- Header simplificado -->
@@ -84,5 +48,6 @@ if (isset($_SESSION['usuario_id'])) {
             Acceso exclusivo para personal autorizado.
         </p>
     </div>
+    <script src="../js/script.js"></script>
 </body>
 </html>

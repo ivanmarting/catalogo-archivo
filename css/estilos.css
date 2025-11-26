@@ -30,47 +30,86 @@
 html, body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden; 
+    /* BORRA o COMENTA la línea 'overflow-x: hidden' */
+    /* overflow-x: hidden;  <-- ELIMINAR ESTA LÍNEA */
+    
+    /* Si realmente necesitas ocultar el scroll horizontal, usa esto en su lugar: */
+    overflow-x: clip; /* Es más moderno y no rompe el sticky */
 }
 /* ========================================================== */
 
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background: #f2f0ec;
-    /* Fondo general de la página */
-    color: #333;
+    /* Este color "blanco humo" es vital para que las cards blancas brillen */
+    background-color: #f4f6f8; 
+    font-family: 'Lora', serif;
+    line-height: 1.6;
+}
+
+/* Forzar elementos de formulario para que no pierdan la fuente */
+input, button, select, textarea, optgroup, option {
+    font-family: 'Lora', serif;
 }
 
 /* -------------------------------------------
    1.1. HEADER Y NAVEGACIÓN (CONSOLIDADO)
    ------------------------------------------- */
+/* --- HEADER MEJORADO --- */
 header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background: #fff;
-    border-bottom: 1px solid #ddd;
+    border-top: 4px solid var(--color-acento); 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+    border-bottom: none; 
     width: 100%;
+    /* position: sticky; /* Opcional: si quieres que persiga al usuario */
+    top: 0;
+    z-index: 1000;
 }
 
 nav {
     display: flex;
-    gap: 15px;
-    align-items: center;
-    max-width: 1200px;
-    padding: 0 20px;
+    align-items: center; 
+    width: 100%;
+    max-width: 1200px;   
+    margin: 0 auto;      
+    padding: 0 20px;    
+    gap: 25px;           
+}
+
+nav a:nth-child(3) {
+    order: -1;             /* Lo movemos visualmente al PRIMER lugar */
+    margin-right: auto;    /* EMPUJA a todos los demás elementos hacia la derecha */
+    padding: 0;            /* Sin relleno extra */
+}
+
+/* 2. Aseguramos que el logo tenga un tamaño correcto */
+.logo {
+    width: 60px;           /* Tamaño ajustado */
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1); /* Efecto zoom suave en el logo */
 }
 
 /* Estilo base para todos los enlaces dentro del header */
 header a {
     text-decoration: none;
     color: var(--color-principal); 
-    font-weight: 500;
+    font-weight: 700;    /* <--- AQUÍ ESTÁ EL CAMBIO (Antes era 500) */
+    font-size: 1.05em;   /* Un pelín más grande para que se lea mejor */
     display: block;
-    border-radius: 5px;
-    padding: 10px 15px;
+    padding: 10px 0;     /* Quitamos padding lateral para que se vea más limpio */
     transition: all 0.3s ease-in-out;
+}
+
+/* Efecto hover */
+header a:hover {
+    color: var(--color-acento); /* Cambio de color simple */
+    transform: translateY(-2px); /* Pequeña elevación elegante */
+    background: none; /* Quitamos el fondo gris que tenías antes */
 }
 
 /* Efecto hover */
@@ -88,54 +127,347 @@ nav a:hover {
 }
 
 /* -------------------------------------------
+   EXTRA. CODIGO DE NOSOTROS, ESTILOS CSS
+   ------------------------------------------- */
+
+/* ================================================= */
+/* ESTILOS PÁGINA NOSOTROS (INTEGRACIÓN)             */
+/* ================================================= */
+
+/* --- BOTONES ESPECÍFICOS DE NOSOTROS --- */
+.btn-ver-mas, .btn-descubrir, .btn-info {
+    display: inline-block;
+    padding: 10px 25px;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Roboto', sans-serif; /* Contraste moderno */
+    letter-spacing: 1px;
+}
+
+.btn-ver-mas {
+    border: 1px solid #333;
+    color: #333;
+}
+.btn-ver-mas:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn-info {
+    border: 1px solid var(--color-acento);
+    color: var(--color-acento);
+    width: 80%;
+    margin-top: auto; /* Empuja el botón al fondo */
+}
+.btn-info:hover {
+    background-color: var(--color-acento);
+    color: #fff;
+}
+
+/* --- SEPARADORES --- */
+hr.separador-nosotros {
+    border: 0;
+    height: 1px;
+    background-color: rgba(0,0,0,0.1);
+    margin: 60px auto;
+    max-width: 80%;
+}
+
+/* --- 1. SECCIÓN HISTORIA --- */
+.seccion-historia {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    gap: 40px;
+    align-items: center;
+}
+
+.contenedor-imagen-historia {
+    flex: 1;              /* Ocupa la mitad del ancho disponible */
+    height: 400px;        /* ALTURA FIJA: Importante para que no cambie */
+    min-height: 400px;    /* Asegura que nunca sea más chico */
+    border-radius: 8px;
+    overflow: hidden;     /* Recorta lo que sobre de la foto */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    background-color: #eee; /* Color de fondo mientras carga la foto */
+}
+
+/* La imagen se adapta "mágicamente" al contenedor */
+.contenedor-imagen-historia img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;    /* CLAVE: Rellena el espacio sin estirarse (recorta) */
+    object-position: center; /* Centra la parte visible de la foto */
+    display: block;
+    transition: transform 0.5s ease; /* Efecto zoom suave opcional */
+}
+
+/* Efecto opcional: Zoom suave al pasar el mouse */
+.contenedor-imagen-historia:hover img {
+    transform: scale(1.05);
+}
+
+.contenido-historia {
+    flex: 1;
+    padding: 20px;
+}
+
+.contenido-historia h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: var(--color-acento);
+}
+
+/* --- 2. SECCIÓN NOTICIAS (GRID ASIMÉTRICO) --- */
+.seccion-noticias {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px;
+    gap: 60px;
+}
+
+.titulo-principal {
+    font-size: 3.5em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: #222;
+    font-family: 'Playfair Display', serif; /* Usamos tu fuente elegante */
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.card-nosotros {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: transform 0.3s;
+    border-left: 3px solid transparent;
+}
+.card-nosotros:hover {
+    transform: translateY(-5px);
+    border-left-color: var(--color-acento);
+}
+
+.icon-card {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: var(--color-acento);
+}
+
+.titulo-card {
+    font-size: 1.1em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.texto-card {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.enlace-card {
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #333;
+}
+
+/* --- 3. DIGITALIZACIÓN --- */
+.seccion-digitalizacion {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.titulo-digitalizacion {
+    font-size: 2.5em;
+    margin-bottom: 50px;
+    color: #333;
+}
+
+.digitalizacion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.dig-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border-top: 4px solid var(--color-acento); /* Coherencia con tus otras cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s;
+}
+.dig-card:hover { transform: translateY(-5px); }
+
+/* --- 4. CARRUSELES (SOLUCIÓN) --- */
+.seccion-archivero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+/* Aquí está la magia: un Grid para poner los 3 carruseles lado a lado */
+.contenedor-carruseles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.carousel-wrapper {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.carousel { 
+    position: relative; 
+    overflow: hidden; 
+    border-radius: 4px;
+}
+
+.carousel-title { 
+    margin-bottom: 15px; 
+    font-weight: 700; 
+    color: var(--color-acento);
+    font-family: 'Lora', serif;
+}
+
+.carousel-viewport { 
+    overflow: hidden; 
+    border-radius: 4px; 
+    background: #eee;
+    aspect-ratio: 4/3; /* Mantiene proporción rectangular */
+}
+
+.carousel-slides { 
+    display: flex; 
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    height: 100%;
+}
+
+.carousel-slides img { 
+    width: 100%; 
+    flex: 0 0 100%; 
+    height: 100%;
+    object-fit: cover; 
+    display: block;
+}
+
+.carousel-prev, .carousel-next {
+    position: absolute; 
+    top: 50%; 
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8); 
+    color: #000; 
+    border: none; 
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer; 
+    font-size: 1.2rem; 
+    z-index: 10;
+    transition: background 0.3s ease;
+    display: flex; align-items: center; justify-content: center;
+    padding-bottom: 3px; /* Ajuste visual de la flecha */
+}
+.carousel-prev:hover, .carousel-next:hover { background: #fff; }
+.carousel-prev { left: 10px; }
+.carousel-next { right: 10px; }
+
+
+
+
+
+/* -------------------------------------------
    2. ESTRUCTURA PRINCIPAL (LAYOUT DE DOS COLUMNAS)
    ------------------------------------------- */
 .contenedor-principal {
     display: flex;
+    /* ESTA LÍNEA ES CLAVE: */
+    align-items: flex-start; /* Evita que las columnas se estiren */
+    
     max-width: 1200px;
     margin: 40px auto;
     gap: 30px;
+    position: relative; /* Ayuda a veces con el contexto */
 }
 
-/* Sidebar de Filtros (para index.php) */
+/* ========================================================== */
+/* 5. SIDEBAR DE FILTROS (ESTILO LIMPIO Y ELEGANTE)           */
+/* ========================================================== */
+
+/* 1. EL CONTENEDOR (ASIDE) - Solo estructura, sin pintura */
 .sidebar-filtros {
     width: 280px;
-    padding: 20px;
-    background-color: var(--color-fondo-filtro);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
     
-    border: 1px solid var(--color-sombra); 
-    box-shadow: 0 2px 4px var(--color-sombra);
-    border-radius: 5px;
+    /* --- LÓGICA STICKY --- */
+    position: -webkit-sticky; /* Para Safari */
+    position: sticky;         /* Estándar */
+    top: 110px;               /* Distancia desde el techo al bajar */
+    z-index: 10;
     
-    /* MODIFICACIONES CLAVE PARA STICKY */
+    /* TRUCO FLEXBOX: */
+    /* Esto evita que la sidebar se estire hasta abajo del todo, */
+    /* permitiendo que el efecto "pegajoso" funcione. */
     height: fit-content; 
-    position: sticky; /* Hacemos que el elemento se pegue */
-    top: 20px;       /* Distancia desde la parte superior de la ventana donde se "pegará" */
-}
-/* FIN DE MODIFICACIONES CLAVE PARA STICKY */
-
-
-.sidebar-filtros h2 {
-    /* MODIFICADO: Título principal en color acento (rojo) */
-    color: var(--color-acento); 
-    
-    margin-top: 0;
-    border-bottom: 2px solid var(--color-gris-claro);
-    padding-bottom: 10px;
+    align-self: start; 
 }
 
-.sidebar-filtros h3 {
-    color: var(--color-acento);
-    font-size: 1.1em;
-    margin-top: 15px;
-    border-bottom: 1px solid var(--color-gris-claro);
-    padding-bottom: 5px;
+/* Limpieza visual de líneas dentro del formulario */
+.sidebar-filtros form {
+    background: #fff;
+    border-top: 4px solid var(--color-acento);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 25px;
+    border-bottom: 1px solid rgba(0,0,0,0.05); /* Solo 1 línea de cierre final */
 }
 
-.sidebar-filtros label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.95em;
+/* IMPORTANTE: Asegurarnos que la etiqueta NO tenga borde */
+.toggle-label {
+    /* ... tus otros estilos de fuente ... */
+    border-bottom: none !important; /* Forzamos que no tenga línea */
+}
+
+/* La única línea separadora debe ser esta: */
+.filtro-grupo {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.08); /* Línea suave */
+}
+
+/* El último grupo no lleva línea para no duplicar con el borde del form */
+.filtro-grupo:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 /* CONTENIDO PRINCIPAL (TARJETAS) */
@@ -178,81 +510,138 @@ nav a:hover {
 }
 
 /* -------------------------------------------
-   4. LAYOUT DE LAS TARJETAS (GRID)
-   ------------------------------------------- */
+   4. LAYOUT DE LAS TARJETAS (GRID)
+   ------------------------------------------- */
 .catalogo-listado {
     flex: 3;
     display: grid;
+    /* Mantiene el grid responsive automático */
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-    gap: 20px;
+    gap: 25px; /* Un poco más de aire entre tarjetas */
 }
 
+/* --- ESTILO DE TARJETA "ARCHIVO" (Elegante) --- */
 .obra-card {
-    border: 2px solid var(--color-acento); 
-    border-radius: 8px;
     background: #fff;
-    text-align: center;
-    padding: 15px;
-    transition: all 0.5s ease;
-    
-    /* MODIFICACIÓN: Para asegurar un tamaño uniforme y controlar el contenido */
-    min-height: 450px; /* Alto mínimo fijo para todas las tarjetas (ajustar si es necesario) */
+    border-top: 4px solid var(--color-acento); 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 8px 16px rgba(0,0,0,0.05);
+    border-left: 1px solid rgba(0,0,0,0.03);
+    border-right: 1px solid rgba(0,0,0,0.03);
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+    border-radius: 6px; 
+    padding: 25px;     
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    min-height: 480px; 
     display: flex; 
     flex-direction: column;
-    justify-content: space-between; /* Mantiene el botón abajo */
+    justify-content: space-between;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Efecto HOVER (Levantar y linea roja lateral) */
 .obra-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    transition: all 0.5s ease;
-    z-index: 1;
+    transform: translateY(-8px); 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.05);
+    border-top-color: #d00; /* Un rojo un pelín más brillante si quieres */
+    z-index: 2;
+}
+
+/* Pequeña línea roja decorativa que aparece a la izquierda al pasar el mouse */
+.obra-card::before {
+    display: none; 
+}
+
+.obra-card:hover::before {
+    opacity: 1;
 }
 
 /* -------------------------------------------
-   5. ESTILOS DENTRO DE LA TARJETA
-   ------------------------------------------- */
+   5. ESTILOS DENTRO DE LA TARJETA
+   ------------------------------------------- */
 .miniatura-catalogo {
     width: 100%;
-    height: 300px; /* MODIFICADO: Imagen menos alta para estructura más ordenada */
+    height: 280px; 
     object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    border-radius: 4px; /* Radio más sutil */
+    margin-bottom: 15px;
+    /* Sombra interna leve a la imagen */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+/* TÍTULO: Fuente Lora, oscuro y con peso */
 .obra-titulo {
-    font-size: 1.2em; /* Ligeramente más grande */
-    font-weight: bold;
-    color: var(--color-principal);
-    margin: 5px 0 2px 0; /* Espaciado ajustado */
+    font-family: 'Lora', serif;
+    font-size: 1.25em; 
+    font-weight: 700;
+    color: #2c2c2c;
+    margin: 0 0 5px 0;
+    line-height: 1.3;
 }
 
-/* Nuevo estilo para el año de composición (pequeño) */
+/* AÑO: Pequeño, gris y cursiva */
 .obra-anio-pequeno {
-    font-size: 0.85em;
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.9em;
     color: #888;
-    margin: 2px 0 10px 0;
+    margin: 0 0 15px 0;
+    border-bottom: 1px solid #eee; /* Pequeño separador visual */
+    padding-bottom: 10px;
 }
 
-/* Estilos de Autor (separa Apellido y Nombre) */
-.obra-autor-apellido,
+/* AUTOR: Apellido en mayúsculas (Estilo ficha de biblioteca) */
+.obra-autor-apellido {
+    font-family: 'Lora', serif;
+    font-size: 0.95em;
+    font-weight: 700;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    color: #444;
+    margin: 0;
+}
+
+/* AUTOR: Nombre normal */
 .obra-autor-nombre {
-    font-size: 1em;
-    font-weight: 500;
-    margin: 2px 0;
+    font-family: 'Lora', serif;
+    font-size: 0.95em;
+    color: #666;
+    margin: 2px 0 0 0;
 }
 
-/* Botones y Enlaces (Se mantiene igual, solo se eliminan los selectores sin uso) */
+/* BOTÓN DE ENLACE (Estilo Píldora Minimalista) */
 .obra-card a {
-    display: block;
-    padding: 8px 10px;
-    margin: 10px 0 0 0;
+    display: inline-block; /* Se ajusta al texto, no ocupa todo el ancho */
+    width: 100%;           /* Opcional: Si prefieres que ocupe todo el ancho, deja esto */
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px 20px;
+    
+    /* Estilos visuales */
+    background-color: transparent;
     border: 1px solid var(--color-acento);
     color: var(--color-acento);
     text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.9em;
-    transition: background-color 0.2s;
+    border-radius: 50px; /* Bordes totalmente redondos */
+    
+    /* Tipografía del botón */
+    font-family: 'Roboto', sans-serif; /* Sans serif para legibilidad en botones */
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    transition: all 0.3s ease;
+}
+
+/* Hover del botón */
+.obra-card a:hover {
+    background-color: var(--color-acento);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(200, 0, 0, 0.2);
 }
 
 /* -------------------------------------------
@@ -349,56 +738,74 @@ form p a {
 /* ---------------------------------------------------- */
 
 /* CORRECCIÓN #3: Eliminar padding horizontal que causa desbordamiento */
+/* ========================================================== */
+/* SECCIÓN BANNER (HEADER PRINCIPAL) - DISEÑO MEJORADO        */
+/* ========================================================== */
+
 .banner {
     width: 100%;
-    background-color: #f2f0ec;
-    padding: 60px 0; /* Solución: 60px vertical, 0px horizontal */
-    border-bottom: 3px solid var(--color-acento);
+    /* Un degradado sutil hace que se vea más "premium" que un color plano */
+    background: linear-gradient(to bottom, #ffffff, #f2f0ec); 
+    padding: 80px 20px;
+    border-bottom: 1px solid #e0e0e0; /* Borde sutil en vez de grueso */
+    text-align: center; /* Centramos todo para dar equilibrio */
 }
 
-/* CORRECCIÓN #4: Mover el padding al contenedor interno para mantener el margen visual */
 .banner-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    padding: 0 20px; /* Añadido padding interno */
+    max-width: 900px; /* Limitamos el ancho para que el texto no se estire demasiado */
     margin: 0 auto;
-    gap: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.banner-text {
-    flex: 2;
-    text-align: left;
-}
-
+/* El texto principal (Nombre de la orquesta) */
 .banner-text h1 {
-    font-size: 2.5em;
-    color: #333;
-    margin: 0 0 10px 0;
-    line-height: 1.2;
+    font-family: 'Playfair Display', serif; /* Fuente elegante */
+    font-size: 3em;       /* Grande e imponente */
+    color: #2c2c2c;       /* Gris muy oscuro, más elegante que negro puro */
+    margin: 0 0 15px 0;
+    line-height: 1.1;     /* Título más compacto */
     font-weight: 700;
-    text-align: left;
+    letter-spacing: -0.5px;
 }
 
+/* El subtítulo (Nombres en rojo) */
 .banner-text h2 {
-    font-size: 1.5em;
+    font-family: 'Roboto', sans-serif; /* Mantenemos sans-serif para contraste */
+    font-size: 1.1em;
     color: var(--color-acento);
     margin: 0 0 20px 0;
-    font-weight: 400;
-    text-align: left;
+    font-weight: 500;
+    text-transform: uppercase; /* Mayúsculas para que parezca una firma o sello */
+    letter-spacing: 2px;       /* Espaciado entre letras (muy elegante) */
+    position: relative;
+    display: inline-block;
 }
 
+/* Línea decorativa debajo del nombre rojo (Opcional, queda muy bien) */
+.banner-text h2::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background-color: var(--color-acento);
+    margin: 10px auto 0 auto; /* Centrado debajo del texto */
+}
+
+/* La bajada (Preservando el patrimonio...) */
 .banner-text p {
-    font-size: 1.1em;
-    color: #555;
-    text-align: left;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;   /* Cursiva para darle toque histórico */
+    font-size: 1.3em;
+    color: #666;
+    margin: 0;
 }
 
+/* Ocultamos la caja de imagen vieja si no la usas, o la ajustamos */
 .banner-image {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
+    display: none; /* En este diseño centrado, la imagen lateral suele sobrar */
 }
 
 .banner-image img {
@@ -445,132 +852,6 @@ aside ul {
 
 aside ul li {
     margin-bottom: 5px;
-}
-
-/* ---------------------------------------------------- */
-/* SECCIÓN NOSOTROS */
-/* ---------------------------------------------------- */
-.nosotros-section {
-    padding: 80px 40px;
-    background: #fff;
-    text-align: center;
-}
-
-.nosotros-header {
-    max-width: 800px;
-    margin: 0 auto 50px auto;
-}
-
-.nosotros-section h2 {
-    font-size: 36px;
-    color: var(--color-acento);
-    margin-bottom: 10px;
-}
-
-.nosotros-section p {
-    font-size: 18px;
-    color: #555;
-}
-
-.nosotros-cards-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.nosotros-card {
-    flex: 1;
-    background: #f8f8f8;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 30px 20px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    transition: all 0.5s ease;
-}
-
-.nosotros-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    cursor: default;
-}
-
-.nosotros-card .card-icon {
-    font-size: 3em;
-    color: var(--color-acento);
-    margin-bottom: 15px;
-}
-
-.nosotros-card h3 {
-    font-size: 22px;
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-/* Bloque Destacado */
-.destacado-barreto {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
-    max-width: 1000px;
-    margin: 40px auto 60px auto;
-    padding: 30px;
-    background: #fff;
-    border: 2px solid var(--color-acento);
-    border-radius: 15px;
-    text-align: left;
-}
-
-.barreto-imagen img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 4px solid #f2f0ec;
-    box-shadow: 0 4px 10px var(--color-sombra);
-}
-
-.barreto-info {
-    flex-basis: 70%;
-}
-
-.barreto-info h3 {
-    margin-top: 0;
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.barreto-info h4 {
-    margin-top: 0;
-    font-size: 18px;
-    color: var(--color-acento);
-    font-weight: 500;
-    margin-bottom: 20px;
-}
-
-.barreto-info p {
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-.barreto-info .rol-destacado {
-    margin-top: 15px;
-    font-style: italic;
-    color: #555;
-    border-left: 3px solid var(--color-acento);
-    padding-left: 10px;
-}
-
-.separator-barreto {
-    border: 0;
-    height: 1px;
-    background: #ddd;
-    width: 50%;
-    margin: 50px auto;
 }
 
 
@@ -870,22 +1151,6 @@ footer {
         position: static;
         margin-bottom: 20px;
     }
-    
-    .destacado-barreto {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .barreto-info {
-        flex-basis: auto;
-    }
-    
-    .barreto-info .rol-destacado {
-        border-left: none;
-        padding-left: 0;
-        border-top: 3px solid var(--color-acento);
-        padding-top: 10px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -901,10 +1166,6 @@ footer {
     .banner-image {
         margin-top: 30px;
         justify-content: center;
-    }
-    
-    .nosotros-cards-container {
-        flex-direction: column;
     }
     
     .footer-container {
@@ -1176,4 +1437,356 @@ footer {
     align-self: flex-start; /* A la izquierda */
     background-color: #ffffff; /* Blanco */
     border: 1px solid #eee;
+}
+
+
+
+/* ========================================================== */
+/* 7. ESTILOS DEL PANEL DE ADMINISTRACIÓN (DISEÑO ELEGANTE)   */
+/* ========================================================== */
+
+/* --- A. CONTENEDORES GENERALES --- */
+.login-container,
+.panel-container,
+.edit-container {
+    max-width: 1000px; /* Un poco más ancho para respirar */
+    margin: 60px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 8px;
+    /* Sombra elegante y difusa (estilo Apple/Stripe) */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
+    border-top: 4px solid var(--color-acento); /* Identidad de marca */
+    animation: fadeIn 0.5s ease-out;
+}
+
+.login-container {
+    max-width: 450px; /* El login debe ser más angosto */
+    text-align: center;
+}
+
+/* Títulos del panel */
+.panel-container h1, 
+.edit-container h1, 
+.login-container h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--color-principal);
+    margin-bottom: 30px;
+    font-size: 2em;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 15px;
+}
+
+/* --- B. HEADER DEL PANEL (Barra superior oscura) --- */
+.panel-header {
+    background: #fff; /* Cambio a blanco para más limpieza */
+    border-bottom: 1px solid #eee;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h1 {
+    font-family: 'Lora', serif;
+    font-size: 1.5em;
+    color: var(--color-principal);
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+.user-info {
+    font-family: 'Roboto', sans-serif;
+    color: #666;
+}
+
+.btn-logout {
+    display: inline-block;
+    margin-left: 15px;
+    padding: 8px 15px;
+    background-color: #f5f5f5;
+    color: #333;
+    border-radius: 50px;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-logout:hover {
+    background-color: var(--color-acento);
+    color: white;
+}
+
+/* --- C. BARRA DE ACCIONES (Botones superiores) --- */
+.acciones-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.btn-accion {
+    padding: 12px 25px;
+    background-color: #fff;
+    color: var(--color-acento);
+    border: 1px solid var(--color-acento);
+    border-radius: 50px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-accion:hover {
+    background-color: var(--color-acento);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(192, 0, 0, 0.2);
+}
+
+/* --- D. TABLAS DE GESTIÓN (Estilo limpio) --- */
+.tabla-gestion {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0; /* Necesario para bordes redondeados */
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden; /* Recorta las esquinas */
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05); /* Borde sutil */
+}
+
+.tabla-gestion th {
+    background-color: #f9fafb;
+    color: #444;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    padding: 18px 20px;
+    text-align: left;
+    border-bottom: 2px solid #eee;
+}
+
+.tabla-gestion td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+    font-family: 'Lora', serif;
+}
+
+.tabla-gestion tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-gestion tr:hover {
+    background-color: #fafafa;
+}
+
+/* Botones dentro de la tabla */
+.acciones-row a {
+    margin-right: 12px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-editar { 
+    color: #1976D2; 
+    background: rgba(33, 150, 243, 0.1); 
+}
+.btn-editar:hover { background: rgba(33, 150, 243, 0.2); }
+
+.btn-eliminar { 
+    color: #D32F2F; 
+    background: rgba(244, 67, 54, 0.1); 
+}
+.btn-eliminar:hover { background: rgba(244, 67, 54, 0.2); }
+
+/* --- E. FORMULARIOS DE EDICIÓN Y LOGIN --- */
+form label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 5px;
+    display: block;
+    margin-top: 20px;
+}
+
+/* Inputs bonitos y grandes */
+form input[type="text"],
+form input[type="password"],
+form input[type="number"],
+form select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1em;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background: #fdfdfd;
+}
+
+form input:focus,
+form select:focus {
+    border-color: var(--color-acento);
+    box-shadow: 0 0 0 3px rgba(200, 0, 0, 0.1);
+    outline: none;
+    background: #fff;
+}
+
+/* Botón de envío principal */
+button[type="submit"],
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    margin-top: 30px;
+    background-color: var(--color-acento);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(200, 0, 0, 0.2);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+button[type="submit"]:hover,
+.btn-login:hover {
+    background-color: #a00;
+    transform: translateY(-2px);
+}
+
+/* --- F. SOLICITUDES (BADGES Y CARDS) --- */
+.request-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-left: 4px solid #ddd; /* Borde por defecto */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.request-card:hover { transform: translateX(5px); }
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.75em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.pendiente { background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+.aprobado { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.rechazado { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+/* Botón aprobar */
+.btn-aprobar {
+    background: #2e7d32;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+    transition: transform 0.2s;
+}
+.btn-aprobar:hover { transform: scale(1.05); background: #1b5e20; }
+
+
+/* ========================================================== */
+/* ESTILOS DE BOTONES DEL PANEL (CORREGIDOS)                  */
+/* ========================================================== */
+
+.acciones-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Alineados a la izquierda */
+}
+
+/* Estilo Base del Botón */
+.btn-accion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre icono y texto */
+    
+    padding: 12px 25px;
+    border-radius: 6px; /* Bordes suavemente redondeados (no píldora exagerada) */
+    
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none !important; /* Importante: Quita el subrayado feo */
+    
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: none;
+    line-height: 1;
+}
+
+/* Efecto Hover General */
+.btn-accion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* --- VARIANTES DE COLOR --- */
+
+/* 1. Primario (Rojo Marca) - Para la acción más importante */
+.btn-primario {
+    background-color: var(--color-acento);
+    color: #fff !important; /* Texto blanco forzado */
+    border: 1px solid var(--color-acento);
+}
+.btn-primario:hover {
+    background-color: #a00; /* Rojo más oscuro */
+    color: #fff !important;
+}
+
+/* 2. Alerta (Naranja Elegante) - Para Solicitudes */
+.btn-alerta {
+    background-color: #e67e22; /* Naranja quemado profesional */
+    color: #fff !important;
+}
+.btn-alerta:hover {
+    background-color: #d35400; /* Naranja oscuro */
+    color: #fff !important;
+}
+
+/* 3. Neutro (Gris Oscuro) - Para ir al sitio web */
+.btn-neutro {
+    background-color: #34495e; /* Azul grisáceo oscuro */
+    color: #fff !important;
+}
+.btn-neutro:hover {
+    background-color: #2c3e50;
+    color: #fff !important;
+}
+
+/* Estilo para los iconitos */
+.btn-accion .icono {
+    font-size: 1.2em;
+    font-weight: normal;
 }

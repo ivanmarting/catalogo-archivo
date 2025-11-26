@@ -27,75 +27,20 @@ $resultado = $conexion->query($sql);
     <meta charset="UTF-8">
     <title>Panel de Control - AOSCH</title>
     <link rel="stylesheet" href="../css/estilos.css">
-    <style>
-        /* Estilos del Panel */
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #333;
-            color: white;
-            padding: 15px 40px;
-        }
-        .panel-header h1 { margin: 0; font-size: 1.5em; color: white; border: none; }
-        .user-info { font-size: 0.9em; }
-        .btn-logout {
-            background: #555;
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            margin-left: 10px;
-            font-size: 0.8em;
-        }
-        .btn-logout:hover { background: #777; }
-
-        .panel-container { max-width: 1200px; margin: 40px auto; padding: 20px; }
-        
-        .acciones-bar {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .btn-accion {
-            display: inline-block;
-            padding: 15px 25px;
-            background: var(--color-acento);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .btn-accion:hover { background: #a00; transform: translateY(-2px); }
-        
-        .tabla-gestion {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .tabla-gestion th, .tabla-gestion td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .tabla-gestion th {
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .tabla-gestion tr:hover { background-color: #f9f9f9; }
-        
-        .acciones-row a {
-            margin-right: 10px;
-            text-decoration: none;
-            font-size: 0.9em;
-        }
-        .btn-editar { color: #2196F3; font-weight: bold; }
-        .btn-eliminar { color: #F44336; font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
+    <header> 
+        <nav>
+             <a href="../index.php">Inicio</a>
+             <a href="nosotros.php">Nosotros</a>
+             <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
+             <a href="contacto.php">Contacto</a>
+             <a href="cargar_obra.php">Subir Archivo</a>
+    
+             <button class="menu-toggle-btn">&#9776;</button> 
+        </nav>
+    </header>
 
     <div class="panel-header">
         <h1>Panel de Administración</h1>
@@ -106,11 +51,19 @@ $resultado = $conexion->query($sql);
     </div>
 
     <div class="panel-container">
-        
+
         <div class="acciones-bar">
-            <a href="solicitudes.php" class="btn-accion" style="background: #E65100;">Ver Solicitudes</a>
-            <a href="cargar_obra.php" class="btn-accion">✚ Subir Nueva Obra</a>
-            <a href="../index.php" class="btn-accion" style="background:#555;">Ver Sitio Web</a>
+            <a href="solicitudes.php" class="btn-accion btn-alerta">
+                <span class="icono">📋</span> Ver Solicitudes
+            </a>
+            
+            <a href="cargar_obra.php" class="btn-accion btn-primario">
+                <span class="icono">✚</span> Subir Nueva Obra
+            </a>
+            
+            <a href="../index.php" class="btn-accion btn-neutro">
+                <span class="icono">🌐</span> Ver Sitio Web
+            </a>
         </div>
 
         <h2>Gestión de Obras Existentes</h2>
@@ -154,6 +107,7 @@ $resultado = $conexion->query($sql);
             </tbody>
         </table>
     </div>
+    <script src="../js/script.js"></script>
 
 </body>
 </html>

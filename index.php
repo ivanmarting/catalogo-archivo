@@ -120,6 +120,10 @@ $categorias_q = $conexion->query("SELECT DISTINCT categoria FROM instrumentos OR
     <meta charset="UTF-8">
     <title>Catálogo General de Partituras</title>
     <link rel="stylesheet" href="css/estilos.css"> 
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    
     <script>
         // Script para mantener los filtros activos al recargar
         document.addEventListener('DOMContentLoaded', function() {
@@ -269,7 +273,6 @@ $categorias_q = $conexion->query("SELECT DISTINCT categoria FROM instrumentos OR
                     </div>
                 </div>
                 
-                <hr>
                 
                 <!-- Clasificación y Orden -->
                 <div class="filtro-grupo">

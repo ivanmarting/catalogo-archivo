@@ -24,6 +24,7 @@ if (!$obra) die("Obra no encontrada.");
     <meta charset="UTF-8">
     <title>Solicitar Acceso</title>
     <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/responsive.css">
     <style>
         .solicitud-container {
             max-width: 600px;
@@ -77,5 +78,6 @@ if (!$obra) die("Obra no encontrada.");
             <button type="submit">Enviar Solicitud</button>
         </form>
     </div>
+    <script src="../js/script.js"></script>
 </body>
 </html>

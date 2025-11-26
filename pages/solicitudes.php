@@ -57,45 +57,7 @@ $res = $conexion->query($sql);
     <meta charset="UTF-8">
     <title>Gestión de Solicitudes</title>
     <link rel="stylesheet" href="../css/estilos.css">
-    <style>
-        .panel-container { max-width: 1200px; margin: 40px auto; padding: 20px; }
-        .request-card { background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .request-info h3 { margin: 0 0 5px 0; color: var(--color-acento); }
-        .status-badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; }
-        .pendiente { background: #ffe0b2; color: #e65100; }
-        .aprobado { background: #c8e6c9; color: #2e7d32; }
-        .rechazado { background: #ffcdd2; color: #c62828; }
-        .btn-aprobar { background: #2e7d32; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; font-weight:bold;}
-        .btn-aprobar:hover { background: #1b5e20; }
-        
-        /* Estilos para la caja de éxito */
-        .success-box {
-            background: #e8f5e9; 
-            border: 2px solid #4caf50; 
-            padding: 25px; 
-            border-radius: 8px; 
-            margin-bottom: 30px; 
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .btn-mailto {
-            display: inline-block;
-            margin-top: 15px;
-            background-color: #2196F3; /* Azul */
-            color: white;
-            font-size: 1.2em;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-        .btn-mailto:hover {
-            transform: scale(1.05);
-            background-color: #1976D2;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
     <header><nav><a href="panel.php">← Volver al Panel</a></nav></header>
@@ -154,5 +116,6 @@ $res = $conexion->query($sql);
             </div>
         <?php endwhile; ?>
     </div>
+    <script src="../js/script.js"></script>
 </body>
 </html>

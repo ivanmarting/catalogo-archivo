@@ -31,8 +31,10 @@ $conexion->close();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cargar Nueva Obra Musical</title>
     <link rel="stylesheet" href="../css/estilos.css"> 
+    <link rel="stylesheet" href="../css/responsive.css">
     <style>
         /* Estilos para los nuevos botones de selección */
         .select-category-buttons {
@@ -65,11 +67,13 @@ $conexion->close();
     
     <header> 
         <nav>
-            <a href="../index.php">Inicio</a>
-            <a href="nosotros.php">Nosotros</a>
-            <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
-            <a href="contacto.php">Contacto</a>
-            <a href="cargar_obra.php">Subir Archivo</a> 
+             <a href="../index.php">Inicio</a>
+             <a href="nosotros.php">Nosotros</a>
+             <a href="../index.php"> <img src="../src/images.png" alt="Logo" class="logo"> </a>
+             <a href="contacto.php">Contacto</a>
+             <a href="cargar_obra.php">Subir Archivo</a>
+    
+             <button class="menu-toggle-btn">&#9776;</button> 
         </nav>
     </header>
     
@@ -224,5 +228,6 @@ $conexion->close();
             });
         });
     </script>
+    <script src="../js/script.js"></script>
 </body>
 </html>

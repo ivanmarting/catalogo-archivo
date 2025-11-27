@@ -83,16 +83,8 @@ nav a:nth-child(3) {
 }
 
 /* 2. Aseguramos que el logo tenga un tamaño correcto */
-.logo {
-    width: 60px;           /* Tamaño ajustado */
-    height: auto;
-    display: block;
-    transition: transform 0.3s ease;
-}
 
-.logo:hover {
-    transform: scale(1.1); /* Efecto zoom suave en el logo */
-}
+
 
 /* Estilo base para todos los enlaces dentro del header */
 header a {
@@ -426,12 +418,6 @@ hr.separador-nosotros {
     box-shadow: none;
     padding: 0;
     margin: 0;
-    
-    /* --- LÓGICA STICKY --- */
-    position: -webkit-sticky; /* Para Safari */
-    position: sticky;         /* Estándar */
-    top: 110px;               /* Distancia desde el techo al bajar */
-    z-index: 10;
     
     /* TRUCO FLEXBOX: */
     /* Esto evita que la sidebar se estire hasta abajo del todo, */
@@ -825,12 +811,6 @@ aside {
     font-size: 14px;
     padding-bottom: 50px;
     
-    /* MODIFICACIONES CLAVE PARA STICKY */
-    position: sticky;
-    top: 20px;
-    height: fit-content;
-    /* FIN DE MODIFICACIONES CLAVE PARA STICKY */
-    
     background: #fff;
     border-radius: 8px;
     padding: 15px;
@@ -1058,10 +1038,10 @@ aside ul li {
 /* FOOTER */
 /* ---------------------------------------------------- */
 footer {
-    background: #eee;
-    padding: 30px 40px;
+    background: #333;
+    padding: 40px 20px;
     font-size: 14px;
-    color: #333;
+    color: #ccc;
 }
 
 .footer-container {
@@ -1087,7 +1067,7 @@ footer {
 
 .footer-col p,
 .footer-col a {
-    color: #555;
+    color: #ccc;
     text-decoration: none;
     line-height: 1.6;
 }

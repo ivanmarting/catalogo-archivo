@@ -133,9 +133,10 @@ session_start();
                 <div class="carousel" data-carousel>
                     <div class="carousel-viewport">
                         <div class="carousel-slides">
-                            <img src="../src/placeholder1.jpg" alt="Foto 1">
-                            <img src="../src/placeholder2.jpg" alt="Foto 2">
-                            <img src="../src/placeholder3.jpg" alt="Foto 3">
+                            <img src="../src/gallery1.jpg" alt="Foto 1">                            
+                            <img src="../src/gallery2.jpg" alt="Foto 2">
+                            <img src="../src/gallery3.jpg" alt="Foto 3">
+                            <img src="../src/gallery4.jpg" alt="Foto 4">
                         </div>
                     </div>
                     <button class="carousel-prev">‹</button>

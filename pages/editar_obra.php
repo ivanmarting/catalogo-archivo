@@ -42,50 +42,6 @@ $generos_q = $conexion->query("SELECT * FROM generos ORDER BY nombre");
     <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
-    <?php
-session_start();
-// 1. SEGURIDAD: Si no es admin, al login.
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
-    exit;
-}
-
-// 2. VALIDAR ID
-if (!isset($_GET['id'])) {
-    die("Error: No se seleccionó ninguna obra para editar.");
-}
-
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'aosch_bd');
-$conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-$id = (int)$_GET['id'];
-
-// 3. OBTENER DATOS ACTUALES DE LA OBRA
-$sql = "SELECT O.*, A.nombre as nombre_autor, A.apellido as apellido_autor, A.nro_orden 
-        FROM obras O 
-        INNER JOIN autores A ON O.id_autor = A.id_autor 
-        WHERE O.id_obra = $id";
-$res = $conexion->query($sql);
-$obra = $res->fetch_assoc();
-
-if (!$obra) die("Obra no encontrada en la base de datos.");
-
-// Obtener lista de géneros para el selector
-$generos_q = $conexion->query("SELECT * FROM generos ORDER BY nombre");
-?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar: <?php echo htmlspecialchars($obra['titulo']); ?></title>
-    <link rel="stylesheet" href="../css/estilos.css">
-    <link rel="stylesheet" href="../css/responsive.css">
-</head>
-<body>
     <header> 
     <nav>
         <a href="../index.php">Inicio</a>

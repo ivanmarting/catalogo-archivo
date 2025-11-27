@@ -61,7 +61,7 @@ try {
 }
 
 // --- 2. CONFIGURACIÓN DE GEMINI ---
-$apiKey = 'AIzaSyCvX1Rk2xuDlTXwKKCRUiYBhvUUt41_4dQ'; // ¡Recuerda poner tu Key real!
+$apiKey = 'ACA VA LA KEY, TOKEN, COMO LE LLAMES'; // ¡Recuerda poner tu Key real!
 $model = 'gemini-2.5-flash';
 $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent?key=' . $apiKey;
 

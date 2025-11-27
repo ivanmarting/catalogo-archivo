@@ -105,105 +105,155 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     // 4. CHATBOT (Protegido para no romper otras páginas)
     // ==================================================================
-    const chatButton = document.getElementById('chat-button');
+   // Definir las constantes de la interfaz
+const chatButton = document.getElementById('chat-button');
+const closeButton = document.getElementById('close-button');
+const chatContainer = document.getElementById('chat-container');
+const chatBox = document.getElementById('chat-box');
+const userInput = document.getElementById('user-input');
+const sendButton = document.getElementById('send-button');
+
+
+// URL de tu script de backend PHP
+const API_URL = 'app/chat.php'; 
+
+// 1. Funcionalidad de Abrir/Cerrar la Ventana
+chatButton.addEventListener('click', () => {
+    chatContainer.classList.toggle('hidden');
+    userInput.focus(); // Enfocar el input al abrir
+});
+
+closeButton.addEventListener('click', () => {
+    chatContainer.classList.add('hidden');
+});
+
+// 2. Función para añadir un mensaje al chat
+function appendMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', `${sender}-message`);
+    messageDiv.innerHTML = message; // Usar innerHTML si Gemini devuelve Markdown/HTML
+    chatBox.appendChild(messageDiv);
     
-    if (chatButton) {
-        const closeButton = document.getElementById('close-button');
-        const chatContainer = document.getElementById('chat-container');
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
-        
-        // Ajuste dinámico de ruta para el backend del chat
-        const prefix = window.location.pathname.includes('/Pages/') ? '../' : '';
-        const API_URL_CHAT = prefix + 'app/chat.php';
+    // Desplazar hacia el último mensaje
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-        chatButton.addEventListener('click', () => {
-            chatContainer.classList.toggle('hidden');
-            if(!chatContainer.classList.contains('hidden')) userInput.focus();
-        });
+// 3. Función principal de envío y comunicación con PHP/Gemini
+async function sendMessage() {
+    const message = userInput.value.trim();
+    if (message === '') return;
 
-        if(closeButton) {
-            closeButton.addEventListener('click', () => {
-                chatContainer.classList.add('hidden');
-            });
-        }
+    // A. Mostrar mensaje del usuario
+    appendMessage(message, 'user');
+    userInput.value = ''; // Limpiar el input
+    sendButton.disabled = true; // Deshabilitar el botón mientras espera
+    userInput.disabled = true;
 
-        function appendMessage(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', `${sender}-message`);
-            messageDiv.innerHTML = message;
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+    // B. Mostrar indicador de "escribiendo..." (opcional pero recomendado)
+    const thinkingIndicator = document.createElement('div');
+    thinkingIndicator.classList.add('message', 'bot-message', 'typing-indicator');
+    thinkingIndicator.innerHTML = '...';
+    chatBox.appendChild(thinkingIndicator);
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (message === '') return;
+try {
+    // A. Añadir la cookie de sesión (CRUCIAL para mantener el historial PHP)
+    const fetchOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        // **Nueva línea:** Envía las cookies (incluyendo PHPSESSID)
+        credentials: 'include', 
+        body: JSON.stringify({ message: message })
+    };
 
-            appendMessage(message, 'user');
-            userInput.value = '';
-            sendButton.disabled = true;
-            userInput.disabled = true;
+    // B. Llamada al backend PHP
+    const response = await fetch(API_URL, fetchOptions);
 
-            const thinkingIndicator = document.createElement('div');
-            thinkingIndicator.classList.add('message', 'bot-message', 'typing-indicator');
-            thinkingIndicator.innerHTML = '...';
-            chatBox.appendChild(thinkingIndicator);
-            chatBox.scrollTop = chatBox.scrollHeight;
+    // ------------------------------------------------------------------
+    // D. PROCESAMIENTO MEJORADO DE LA RESPUESTA (Corrección del problema)
+    // ------------------------------------------------------------------
+    
+    // Leemos la respuesta como TEXTO, no como JSON directamente.
+    const responseText = await response.text();
+    let data = null;
+    let isHtmlError = false;
 
-            try {
-                const response = await fetch(API_URL_CHAT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ message: message })
-                });
-
-                const responseText = await response.text();
-                let data = null;
-                let isHtmlError = false;
-
-                if (responseText.trim().startsWith('<')) isHtmlError = true;
-
-                if (!isHtmlError && responseText) {
-                    try { data = JSON.parse(responseText); } catch (e) { isHtmlError = true; }
-                }
-
-                if(chatBox.contains(thinkingIndicator)) {
-                    chatBox.removeChild(thinkingIndicator);
-                }
-
-                if (!response.ok || isHtmlError || !data) {
-                    throw new Error('Error en respuesta del servidor');
-                }
-
-                if (data.success) {
-                    appendMessage(data.response, 'bot');
-                } else {
-                    const errorMsg = data.details || 'Error desconocido';
-                    appendMessage(errorMsg.includes("overloaded") ? 'El asistente está ocupado.' : `Error: ${errorMsg}`, 'bot');
-                }
-
-            } catch (error) {
-                if(document.querySelector('.typing-indicator')) {
-                    document.querySelector('.typing-indicator').remove();
-                }
-                appendMessage('Error de conexión con el servidor.', 'bot');
-                console.error(error);
-            } finally {
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                userInput.focus();
-            }
-        }
-
-        if(sendButton) sendButton.addEventListener('click', sendMessage);
-        if(userInput) userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
+    // 1. Verificar si la respuesta es HTML (posible error de PHP)
+    if (responseText.trim().startsWith('<')) {
+        console.error("Respuesta fallida: Se recibió HTML/Error de PHP en lugar de JSON.", responseText);
+        isHtmlError = true;
     }
 
+    // 2. Intentar parsear el texto a JSON
+    if (!isHtmlError && responseText) {
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error("Fallo al parsear JSON:", responseText, e);
+            // Si falla el parseo, tratamos como un error no-JSON
+            isHtmlError = true;
+        }
+    }
+
+    // 3. Evaluar el resultado
+    
+    // Si hubo un error de conexión HTTP (ej. 404, 500) O error de HTML/parseo
+    if (!response.ok || isHtmlError || !data) {
+        // Lanza un error para que caiga en el bloque catch, pero con más detalles
+        throw new Error(`El servidor respondió con código ${response.status}. Tipo de error: ${isHtmlError ? 'HTML/Parseo' : 'Desconocido'}.`);
+    }
+
+    // ------------------------------------------------------------------
+    // E. MANEJO DE ÉXITO O FALLO DEL JSON (El JSON sí es válido)
+    // ------------------------------------------------------------------
+
+    // Eliminar el indicador de "escribiendo..."
+    chatBox.removeChild(thinkingIndicator);
+
+    if (data.success) {
+        // Mostrar respuesta exitosa
+        // ¡AGREGA AQUÍ TU FUNCIÓN appendMessage para data.response!
+        appendMessage(data.response, 'bot'); 
+
+    } else {
+        const errorMessage = data.details || 'Intenta de nuevo más tarde.';
+        
+        // Si el mensaje contiene "overloaded", muestra algo específico:
+        if (errorMessage.includes("overloaded")) {
+            appendMessage('Asistente Ocupado: El modelo de IA está experimentando alta demanda. Por favor, intenta nuevamente en unos momentos.', 'bot');
+        } else {
+            appendMessage(`Error de la API: ${errorMessage}`, 'bot');
+        }
+        console.error('Error de API:', errorMessage);
+    }
+
+} catch (error) {
+        // En caso de error de red o fallo de fetch
+        // Asegúrate de que thinkingIndicator existe antes de intentar eliminarlo
+        if(document.querySelector('.typing-indicator')) {
+             chatBox.removeChild(document.querySelector('.typing-indicator'));
+        }
+        appendMessage('**Error de conexión.** No se pudo contactar al servidor. ', error);
+        console.error('Error de Fetch:', error);
+    } finally {
+        // E. Volver a habilitar la interfaz
+        sendButton.disabled = false;
+        userInput.disabled = false;
+        userInput.focus();
+    }
+}
+
+// 4. Conectar la función de envío al botón y a la tecla Enter
+sendButton.addEventListener('click', sendMessage);
+
+userInput.addEventListener('keypress', (event) => {
+    // Código 13 es la tecla Enter
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
 
     // ==================================================================
     // 5. RESPONSIVE: MENÚ HAMBURGUESA Y FILTROS (CORREGIDO Y FORZADO)
